@@ -1,0 +1,174 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  --theme-gradient: radial-gradient(circle at top right, rgba(251,207,232,0.15) 0%, transparent 50%), radial-gradient(circle at bottom left, rgba(216,180,254,0.15) 0%, transparent 50%), linear-gradient(135deg, #18111a 0%, #0d0710 100%);
+  --theme-accent: #f472b6;
+  --theme-glow: rgba(244,114,182,0.2);
+  --theme-card-glass: rgba(251,207,232,0.02);
+  --theme-nav-glass: rgba(251,207,232,0.02);
+  
+  --ui-factor: 1.0;
+  --font-base: 16px;
+}
+
+html {
+  font-size: var(--font-base);
+}
+
+@layer base {
+  body {
+    @apply text-white overflow-x-hidden min-h-screen selection:bg-white/20;
+    font-family: var(--font-sans);
+    background-color: #030712;
+  }
+}
+
+@layer utilities {
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 20px);
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Renaissance Marble Light Theme Overrides */
+.theme-light {
+  color: #0f172a !important;
+}
+.theme-light .text-white {
+  color: #0f172a !important;
+}
+.theme-light .text-white\/60 {
+  color: rgba(15, 23, 42, 0.6) !important;
+}
+.theme-light .text-white\/50 {
+  color: rgba(15, 23, 42, 0.5) !important;
+}
+.theme-light .text-white\/40 {
+  color: rgba(15, 23, 42, 0.4) !important;
+}
+.theme-light .text-white\/30 {
+  color: rgba(15, 23, 42, 0.3) !important;
+}
+.theme-light .text-white\/20 {
+  color: rgba(15, 23, 42, 0.2) !important;
+}
+.theme-light .text-white\/10 {
+  color: rgba(15, 23, 42, 0.1) !important;
+}
+.theme-light .bg-white {
+  background-color: #0f172a !important;
+}
+.theme-light .bg-white\/10 {
+  background-color: rgba(15, 23, 42, 0.1) !important;
+}
+.theme-light .bg-white\/20 {
+  background-color: rgba(15, 23, 42, 0.2) !important;
+}
+.theme-light .bg-white\/5 {
+  background-color: rgba(15, 23, 42, 0.05) !important;
+}
+.theme-light .border-white\/20 {
+  border-color: rgba(15, 23, 42, 0.2) !important;
+}
+.theme-light .border-white\/10 {
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+.theme-light .shadow-\[0_0_8px_white\] {
+  box-shadow: 0 0 8px rgba(15, 23, 42, 0.5) !important;
+}
+
+@media screen and (orientation: landscape) and (max-device-width: 932px) {
+  #orientation-lock {
+    display: flex !important;
+  }
+  #root {
+    display: none !important;
+  }
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.masculine-glow {
+  box-shadow: 0 0 30px rgba(100, 210, 255, 0.4), inset 0 0 15px rgba(100, 210, 255, 0.2);
+  border: 1px solid rgba(100, 210, 255, 0.4);
+}
+
+.feminine-glow {
+  box-shadow: 0 0 30px rgba(255, 180, 180, 0.4), inset 0 0 15px rgba(255, 180, 180, 0.2);
+  border: 1px solid rgba(255, 180, 180, 0.4);
+}
+
+.farsi-text {
+  direction: rtl;
+  text-align: right;
+}
+
+@keyframes mesh {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+.animate-mesh {
+  animation: mesh 12s ease-in-out infinite;
+}
+
+.animate-mesh-delayed {
+  animation: mesh 15s ease-in-out infinite reverse;
+  animation-delay: -5s;
+}
+
+
