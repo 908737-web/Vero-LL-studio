@@ -47,11 +47,11 @@ export const PackageSelectorDrawer = ({
             {/* Header */}
             <div className="p-8 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white tracking-tight uppercase leading-none">
-                  Package Hub
+                <h2 className="text-2xl font-extrabold text-white tracking-tight leading-none">
+                  Package Library
                 </h2>
-                <p className="text-white/40 text-[0.7rem] font-bold uppercase tracking-widest mt-1">
-                  Inject Module Content
+                <p className="text-white/50 text-[0.7rem] font-bold uppercase tracking-widest mt-1.5">
+                  Select Data Source
                 </p>
               </div>
               <button 
@@ -65,8 +65,8 @@ export const PackageSelectorDrawer = ({
 
             {/* List */}
             <div className="flex-1 overflow-y-auto px-6 pb-8 space-y-3 custom-scrollbar">
-              <div className="text-[0.6rem] font-black text-white/30 uppercase tracking-[0.3em] pl-2 mb-2">
-                Available Frazioni
+              <div className="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest pl-1 mb-2">
+                Available Packages
               </div>
               
               {packages.map((pkg, idx) => (
@@ -98,11 +98,11 @@ export const PackageSelectorDrawer = ({
                   </div>
                   
                   <div className="text-left">
-                    <div className="text-[0.9rem] font-bold text-white leading-tight">
+                    <div className="text-base font-extrabold text-white tracking-tight leading-tight">
                       {pkg.name}
                     </div>
-                    <div className="text-[0.6rem] font-bold text-white/20 uppercase tracking-widest mt-0.5">
-                      {idx % 2 === 0 ? 'Verified Authority' : 'Community Seed'}
+                    <div className="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest mt-0.5">
+                      {idx % 2 === 0 ? 'Official Collection' : 'Community Add-on'}
                     </div>
                   </div>
 
@@ -119,8 +119,8 @@ export const PackageSelectorDrawer = ({
               ))}
 
               {/* Mock Community Packages */}
-              <div className="pt-4 text-[0.6rem] font-black text-white/30 uppercase tracking-[0.3em] pl-2 mb-2">
-                Community Discovery
+              <div className="pt-4 text-[0.65rem] font-bold text-white/40 uppercase tracking-widest pl-1 mb-2">
+                Discover More
               </div>
               {[1, 2].map((i) => (
                 <div 
@@ -131,11 +131,11 @@ export const PackageSelectorDrawer = ({
                     {i === 1 ? <Sparkles size={20} /> : <Zap size={20} />}
                   </div>
                   <div className="text-left">
-                    <div className="text-[0.9rem] font-bold text-white leading-tight">
+                    <div className="text-base font-extrabold text-white tracking-tight leading-tight">
                       {i === 1 ? 'Street Slang Pro' : 'Napoli Dialect Pack'}
                     </div>
-                    <div className="text-[0.6rem] font-bold text-white/20 uppercase tracking-widest mt-0.5">
-                      External Archive
+                    <div className="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest mt-0.5">
+                      External Package
                     </div>
                   </div>
                 </div>

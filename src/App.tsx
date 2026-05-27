@@ -115,6 +115,13 @@ export default function App() {
     youtube: 'easy',
     smartlib: 'progetto'
   });
+
+  const getSelectedPackageName = (moduleId: string) => {
+    const pkgId = selectedPackages[moduleId];
+    const pkgs = MODULE_PACKAGES[moduleId] || [];
+    const found = pkgs.find(p => p.id === pkgId);
+    return found ? found.name : 'PACKAGES';
+  };
   const [isHeatmapExpanded, setIsHeatmapExpanded] = useState(false);
   const [discoveryThemeColor, setDiscoveryThemeColor] = useState('');
   const [particleAnimation, setParticleAnimation] = useState<{ x: number, y: number, color: string } | null>(null);
@@ -235,7 +242,7 @@ export default function App() {
       </div>
 
       <div 
-        className={`relative w-full font-sans selection:bg-white/20 transition-all duration-300 ease-in-out ${view === 'settings' ? 'min-h-screen' : 'h-screen overflow-hidden'} ${currentTheme.textClass || ''} ${(activeDropdown || isPackageSelectorOpen) ? 'scale-[0.98]' : 'scale-100'}`}
+        className={`relative w-full font-sans selection:bg-white/20 transition-all duration-300 ease-in-out h-screen overflow-hidden ${currentTheme.textClass || ''} ${(activeDropdown || isPackageSelectorOpen) ? 'scale-[0.98]' : 'scale-100'}`}
         style={{ background: 'var(--theme-gradient)', backgroundAttachment: 'fixed' }}
       >
         <div 
@@ -367,21 +374,24 @@ export default function App() {
                             </svg>
                           </div>
 
-                          <div className="relative z-10 w-full h-full p-8 flex flex-col justify-between">
+                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
                             <div>
-                              <div className="bg-blue-500/20 w-fit p-3.5 rounded-[2rem] border border-blue-500/20 shadow-sm backdrop-blur-md mb-4 group-hover:scale-110 transition-transform">
-                                <BookOpen className="w-6 h-6 md:w-8 md:h-8 text-blue-400" />
-                              </div>
-                              <h3 className={isDarkMode ? "text-2xl md:text-3xl font-black text-white tracking-tighter uppercase leading-none shadow-sm" : "text-2xl md:text-3xl font-black text-slate-900 tracking-tighter uppercase leading-none shadow-sm"}>
-                                Vocabulary Realm
-                              </h3>
-                              <p className="text-blue-400/60 text-[0.65rem] font-bold uppercase tracking-[0.2em] mt-2">
-                                Mastering Essential Lexis
-                              </p>
+                                <div className="bg-blue-500/20 w-fit p-2.5 rounded-2xl border border-blue-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
+                                  <BookOpen className="w-5 h-5 text-blue-400" />
+                                </div>
+                                <div className="min-w-0">
+                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                    Vocabulary Realm
+                                  </h3>
+                                  <p className="text-blue-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                    Mastering Essential Lexis
+                                  </p>
+                                </div>
                             </div>
                             
                             <div className="mt-auto flex justify-start">
                               <LiquidCapsuleButton 
+                                label={getSelectedPackageName('vocab')}
                                 onClick={() => {
                                   setSelectorModuleId('vocab');
                                   setIsPackageSelectorOpen(true);
@@ -409,25 +419,78 @@ export default function App() {
                           className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative"
                           onClick={() => setView('study')}
                         >
-                          {/* Ghost Progress Background */}
-                          <div className="absolute inset-0 z-0 flex flex-col justify-end">
-                            <motion.div 
-                              className="w-full bg-emerald-500/15" 
-                              initial={{ height: 0 }}
-                              animate={{ height: '60%' }}
-                              transition={{ duration: 1.5, ease: 'easeOut' }}
-                            />
+                          {/* Syntax Connections SVG Schematic Background */}
+                          <div className="absolute inset-0 opacity-25 pointer-events-none">
+                            <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                              <motion.path 
+                                d="M 10,80 Q 30,50 50,50 T 90,20" 
+                                fill="none" 
+                                stroke="url(#grammarGrad)" 
+                                strokeWidth="2"
+                                strokeDasharray="4 2"
+                                initial={{ pathLength: 0 }}
+                                animate={{ pathLength: 1 }}
+                                transition={{ duration: 2.2, ease: "easeOut" }}
+                              />
+                              <motion.path 
+                                d="M 50,50 Q 60,70 85,75" 
+                                fill="none" 
+                                stroke="url(#grammarGrad)" 
+                                strokeWidth="1.5"
+                                initial={{ pathLength: 0 }}
+                                animate={{ pathLength: 1 }}
+                                transition={{ duration: 2.2, delay: 0.5, ease: "easeOut" }}
+                              />
+                              <motion.circle 
+                                cx="10" cy="80" r="3" 
+                                fill="#10b981"
+                                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+                                transition={{ duration: 3, repeat: Infinity }}
+                              />
+                              <motion.circle 
+                                cx="50" cy="50" r="4" 
+                                fill="#10b981"
+                                animate={{ scale: [1, 1.6, 1], opacity: [0.6, 1, 0.6] }}
+                                transition={{ duration: 4, repeat: Infinity, delay: 0.5 }}
+                              />
+                              <motion.circle 
+                                cx="90" cy="20" r="3" 
+                                fill="#10b981"
+                                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+                                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+                              />
+                              <motion.circle 
+                                cx="85" cy="75" r="3.5" 
+                                fill="#10b981"
+                                animate={{ scale: [1, 1.4, 1], opacity: [0.4, 0.9, 0.4] }}
+                                transition={{ duration: 3.5, repeat: Infinity, delay: 0.7 }}
+                              />
+                              <defs>
+                                <linearGradient id="grammarGrad" x1="0" y1="1" x2="1" y2="0">
+                                  <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
+                                  <stop offset="100%" stopColor="#34d399" stopOpacity="0.2" />
+                                </linearGradient>
+                              </defs>
+                            </svg>
                           </div>
 
-                          <div className="relative z-10 w-full h-full p-6 flex flex-col justify-between">
+                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
                             <div>
-                               <div className="bg-emerald-500/20 w-fit p-3 rounded-2xl border border-emerald-500/20 shadow-sm backdrop-blur-md mb-3">
-                                <MessageSquare className="w-6 h-6 text-emerald-400" />
-                              </div>
-                              <h3 className={isDarkMode ? "text-xl font-bold text-white tracking-tight uppercase leading-none shadow-sm" : "text-xl font-bold text-slate-900 tracking-tight uppercase leading-none shadow-sm"}>Grammar</h3>
+                                <div className="bg-emerald-500/20 w-fit p-2.5 rounded-2xl border border-emerald-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
+                                  <MessageSquare className="w-5 h-5 text-emerald-400" />
+                                </div>
+                                <div className="min-w-0">
+                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                    Grammar Core
+                                  </h3>
+                                  <p className="text-emerald-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                    Structured Syntax
+                                  </p>
+                                </div>
                             </div>
-                            <div className="mt-auto">
+                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start">
                               <LiquidCapsuleButton 
+                                label={getSelectedPackageName('grammar')}
                                 onClick={() => {
                                   setSelectorModuleId('grammar');
                                   setIsPackageSelectorOpen(true);
@@ -452,7 +515,7 @@ export default function App() {
                         }}
                       >
                         <div
-                          className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative"
+                           className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative"
                           onClick={() => setView('study')}
                         >
                           {/* Soundwave background */}
@@ -468,15 +531,23 @@ export default function App() {
                             ))}
                           </div>
 
-                          <div className="relative z-10 w-full h-full p-6 flex flex-col justify-between">
+                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
                             <div>
-                              <div className="bg-purple-500/20 w-fit p-3 rounded-2xl border border-purple-500/20 shadow-sm backdrop-blur-md mb-3">
-                                <Headphones className="w-6 h-6 text-purple-400" />
-                              </div>
-                              <h3 className={isDarkMode ? "text-xl font-bold text-white tracking-tight uppercase leading-none shadow-sm" : "text-xl font-bold text-slate-900 tracking-tight uppercase leading-none shadow-sm"}>Listening</h3>
+                                <div className="bg-purple-500/20 w-fit p-2.5 rounded-2xl border border-purple-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
+                                  <Headphones className="w-5 h-5 text-purple-400" />
+                                </div>
+                                <div className="min-w-0">
+                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                    Listening Lab
+                                  </h3>
+                                  <p className="text-purple-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                    Aural Comprehension
+                                  </p>
+                                </div>
                             </div>
-                            <div className="mt-auto">
+                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start">
                               <LiquidCapsuleButton 
+                                label={getSelectedPackageName('listening')}
                                 onClick={() => {
                                   setSelectorModuleId('listening');
                                   setIsPackageSelectorOpen(true);
@@ -527,21 +598,29 @@ export default function App() {
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border border-pink-400/30 border-dashed animate-[spin_10s_linear_infinite]" />
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-pink-400/20 animate-[spin_7s_linear_infinite_reverse]" />
 
-                          <div className="relative z-10 w-full h-full p-6 flex flex-col justify-between text-left">
-                              <div>
-                                <div className="bg-pink-500/20 w-fit p-3.5 rounded-2xl border border-pink-500/20 shadow-sm backdrop-blur-md mb-4">
-                                  <FlaskConical className="w-6 h-6 text-pink-400" />
+                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
+                            <div>
+                                <div className="bg-pink-500/20 w-fit p-2.5 rounded-2xl border border-pink-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
+                                  <FlaskConical className="w-5 h-5 text-pink-400" />
                                 </div>
-                                <h3 className={isDarkMode ? "text-2xl font-bold text-white tracking-tight uppercase leading-none shadow-sm" : "text-2xl font-bold text-slate-900 tracking-tight uppercase leading-none shadow-sm"}>Verb Lab</h3>
-                              </div>
-                              <div className="mt-auto">
-                                <LiquidCapsuleButton 
-                                  onClick={() => {
-                                    setSelectorModuleId('verblab');
-                                    setIsPackageSelectorOpen(true);
-                                  }} 
-                                />
-                              </div>
+                                <div className="min-w-0">
+                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                    Verb Lab
+                                  </h3>
+                                  <p className="text-pink-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                    Dynamic Conjugation
+                                  </p>
+                                </div>
+                            </div>
+                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start">
+                              <LiquidCapsuleButton 
+                                label={getSelectedPackageName('verblab')}
+                                onClick={() => {
+                                  setSelectorModuleId('verblab');
+                                  setIsPackageSelectorOpen(true);
+                                }} 
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -570,20 +649,28 @@ export default function App() {
                             <motion.div className="h-1 bg-amber-500/50 rounded-full w-[70%]" animate={{ width: ['70%', '100%', '70%'] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }} />
                           </div>
 
-                          <div className="relative z-10 w-full h-full p-6 flex flex-col justify-between">
+                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
                             <div>
-                              <div className="bg-amber-500/20 w-fit p-3 rounded-2xl border border-amber-500/20 shadow-sm backdrop-blur-md mb-3">
-                                <PenTool className="w-6 h-6 text-amber-400" />
-                              </div>
-                              <h3 className={isDarkMode ? "text-xl font-bold text-white tracking-tight uppercase leading-none shadow-sm" : "text-xl font-bold text-slate-900 tracking-tight uppercase leading-none shadow-sm"}>Stories</h3>
+                                <div className="bg-amber-500/20 w-fit p-2.5 rounded-2xl border border-amber-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
+                                  <PenTool className="w-5 h-5 text-amber-400" />
+                                </div>
+                                <div className="min-w-0">
+                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                    Stories Repo
+                                  </h3>
+                                  <p className="text-amber-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                    Narrative Comprehension
+                                  </p>
+                                </div>
                             </div>
-                            <div className="mt-auto">
-                                <LiquidCapsuleButton 
-                                  onClick={() => {
-                                    setSelectorModuleId('stories');
-                                    setIsPackageSelectorOpen(true);
-                                  }} 
-                                />
+                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start">
+                              <LiquidCapsuleButton 
+                                label={getSelectedPackageName('stories')}
+                                onClick={() => {
+                                  setSelectorModuleId('stories');
+                                  setIsPackageSelectorOpen(true);
+                                }} 
+                              />
                             </div>
                           </div>
                         </div>
@@ -616,20 +703,28 @@ export default function App() {
                             </motion.div>
                           </div>
 
-                          <div className="relative z-10 w-full h-full p-6 flex flex-col justify-between">
+                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
                             <div>
-                               <div className="bg-red-500/20 w-fit p-3 rounded-2xl border border-red-500/20 shadow-sm backdrop-blur-md mb-3">
-                                <Youtube className="w-6 h-6 text-red-400" />
-                              </div>
-                              <h3 className={isDarkMode ? "text-xl font-bold text-white tracking-tight uppercase leading-none shadow-sm" : "text-xl font-bold text-slate-900 tracking-tight uppercase leading-none shadow-sm"}>YouTube</h3>
+                                <div className="bg-red-500/20 w-fit p-2.5 rounded-2xl border border-red-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
+                                  <Youtube className="w-5 h-5 text-red-400" />
+                                </div>
+                                <div className="min-w-0">
+                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                    Cinema Realm
+                                  </h3>
+                                  <p className="text-red-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                    Authentic Media Elements
+                                  </p>
+                                </div>
                             </div>
-                            <div className="mt-auto">
-                                <LiquidCapsuleButton 
-                                  onClick={() => {
-                                    setSelectorModuleId('youtube');
-                                    setIsPackageSelectorOpen(true);
-                                  }} 
-                                />
+                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start">
+                              <LiquidCapsuleButton 
+                                label={getSelectedPackageName('youtube')}
+                                onClick={() => {
+                                  setSelectorModuleId('youtube');
+                                  setIsPackageSelectorOpen(true);
+                                }} 
+                              />
                             </div>
                           </div>
                         </div>
@@ -666,23 +761,28 @@ export default function App() {
                             </div>
                           </div>
 
-                          <div className="relative z-10 w-full h-full p-8 flex flex-col justify-between">
+                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
                             <div>
-                              <div className="bg-cyan-500/20 w-fit p-3.5 rounded-2xl border border-cyan-500/20 shadow-sm backdrop-blur-md mb-4">
-                                <Library className="w-6 h-6 md:w-8 md:h-8 text-cyan-400" />
-                              </div>
-                              <h3 className={isDarkMode ? "text-2xl md:text-3xl font-black text-white tracking-tighter uppercase leading-none shadow-sm" : "text-2xl md:text-3xl font-black text-slate-900 tracking-tighter uppercase leading-none shadow-sm"}>
-                                Smart Library
-                              </h3>
+                                <div className="bg-cyan-500/20 w-fit p-2.5 rounded-2xl border border-cyan-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
+                                  <Library className="w-5 h-5 text-cyan-400" />
+                                </div>
+                                <div className="min-w-0">
+                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                    Smart Library
+                                  </h3>
+                                  <p className="text-cyan-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                    Curated Reading Resources
+                                  </p>
+                                </div>
                             </div>
-                            
-                            <div className="mt-auto">
-                                <LiquidCapsuleButton 
-                                  onClick={() => {
-                                    setSelectorModuleId('smartlib');
-                                    setIsPackageSelectorOpen(true);
-                                  }} 
-                                />
+                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start">
+                              <LiquidCapsuleButton 
+                                label={getSelectedPackageName('smartlib')}
+                                onClick={() => {
+                                  setSelectorModuleId('smartlib');
+                                  setIsPackageSelectorOpen(true);
+                                }} 
+                              />
                             </div>
                           </div>
                         </div>
