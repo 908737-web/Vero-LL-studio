@@ -31,7 +31,7 @@ const Accordion = ({ title, icon, children, isOpen, onClick }: {
     <div className="w-full space-y-2">
       <button 
         onClick={(e) => { e.stopPropagation(); onClick(); }}
-        className="w-full glass px-5 py-4 rounded-2xl flex items-center justify-between border-white/10 hover:bg-white/10 transition-all active:scale-[0.98]"
+        className="w-full glass px-3 py-4 rounded-2xl flex items-center justify-between border-white/10 hover:bg-white/10 transition-all active:scale-[0.98]"
       >
         <div className="flex items-center gap-3">
           <div className="text-white/40">{icon}</div>
@@ -264,13 +264,13 @@ export const Flashcard: React.FC<FlashcardProps> = ({ data, onAnswer }) => {
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 pointer-events-none z-[110] flex justify-between px-12 overflow-hidden w-full">
         <motion.div 
           style={{ opacity: hardOpacity, scale: hardScale }}
-          className="bg-red-500 text-white px-6 py-3 rounded-2xl font-black uppercase tracking-widest shadow-2xl skew-x-[-10deg]"
+          className="bg-red-500 text-white px-3 py-3 rounded-2xl font-black uppercase tracking-widest shadow-2xl skew-x-[-10deg]"
         >
           Hard
         </motion.div>
         <motion.div 
           style={{ opacity: goodOpacity, scale: goodScale }}
-          className="bg-blue-500 text-white px-6 py-3 rounded-2xl font-black uppercase tracking-widest shadow-2xl skew-x-[10deg]"
+          className="bg-blue-500 text-white px-3 py-3 rounded-2xl font-black uppercase tracking-widest shadow-2xl skew-x-[10deg]"
         >
           Good
         </motion.div>
@@ -279,7 +279,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({ data, onAnswer }) => {
       <div className="absolute top-12 left-1/2 -translate-x-1/2 pointer-events-none z-[110]">
         <motion.div 
           style={{ opacity: easyOpacity, scale: easyScale }}
-          className="bg-emerald-500 text-white px-8 py-4 rounded-3xl font-black uppercase tracking-[0.3em] shadow-2xl flex flex-col items-center"
+          className="bg-emerald-500 text-white px-3 py-4 rounded-3xl font-black uppercase tracking-[0.3em] shadow-2xl flex flex-col items-center"
         >
           <Sparkles className="mb-2" />
           Easy
@@ -356,7 +356,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({ data, onAnswer }) => {
             </div>
 
             {/* Content Section */}
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-6 pb-4 space-y-3">
+            <div className="flex-1 flex flex-col items-center justify-center text-center px-3 pb-4 space-y-3">
               <div className="space-y-2">
                 <h1 className="text-white text-4xl sm:text-5xl font-light tracking-tight flex items-center justify-center gap-2">
                   <span 
@@ -440,7 +440,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({ data, onAnswer }) => {
             animate={isFlipped ? { clipPath: 'inset(0% 0% 0% 100%)' } : { clipPath: 'inset(0% 0% 0% 0%)' }}
             transition={{ duration: 0.6, ease: "easeInOut" }}
           />
-          <GlassCard className="h-full flex flex-col p-4 px-5 border-0 rounded-none shadow-none bg-[#030712]/50 overflow-hidden">
+          <GlassCard className="h-full flex flex-col p-4 px-3 border-0 rounded-none shadow-none bg-[#030712]/50 overflow-hidden">
             {/* Speed Burner Line */}
             <div className="absolute top-0 left-0 right-0 h-[0.1875rem] z-50">
                <motion.div 
@@ -516,7 +516,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({ data, onAnswer }) => {
                         <div className="space-y-4">
                             {data.dialogs.map((msg, i) => (
                                 <div key={i} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[85%] px-4 py-2.5 rounded-2xl shadow-lg ${
+                                    <div className={`max-w-[85%] px-3 py-2.5 rounded-2xl shadow-lg ${
                                         msg.sender === 'user' 
                                         ? 'bg-blue-600 rounded-tr-none text-white' 
                                         : 'bg-white/10 rounded-tl-none text-white/90 border border-white/10'

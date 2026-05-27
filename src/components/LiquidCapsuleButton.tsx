@@ -14,7 +14,7 @@ export const LiquidCapsuleButton = ({ onClick, label = 'PACKAGES' }: LiquidCapsu
         e.stopPropagation();
         onClick();
       }}
-      className="relative flex items-center justify-center px-4 py-2.5 rounded-full overflow-hidden backdrop-blur-3xl transition-all group max-w-full"
+      className="relative flex items-center justify-center px-3 py-2.5 @max-xs:px-2 @max-xs:py-1.5 rounded-full overflow-hidden backdrop-blur-3xl transition-all group max-w-full w-fit @max-xs:w-full"
       style={{
         background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))',
         border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -30,7 +30,7 @@ export const LiquidCapsuleButton = ({ onClick, label = 'PACKAGES' }: LiquidCapsu
         transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
       />
       
-      <span className="relative z-10 text-white font-bold text-[0.6rem] uppercase tracking-widest drop-shadow-md truncate w-full text-center">
+      <span className="relative z-10 text-white font-bold text-[clamp(0.5rem,5cqw,0.65rem)] uppercase tracking-widest drop-shadow-md truncate w-full text-center">
         {label}
       </span>
     </motion.button>

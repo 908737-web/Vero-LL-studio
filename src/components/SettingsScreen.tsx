@@ -120,7 +120,7 @@ export const SettingsScreen = ({
       {/* 1. SRS Learning */}
       <section className="space-y-3">
         <h3 className="text-[0.625rem] font-bold uppercase tracking-[0.3em] text-white/30 px-2">SRS</h3>
-        <GlassCard className="px-5 py-4 space-y-4">
+        <GlassCard className="px-3 py-4 space-y-4">
           <div className="flex items-center justify-between">
              <div className="flex items-center gap-4">
                 <div className="p-3 bg-yellow-400/10 rounded-xl border border-yellow-400/20">
@@ -133,7 +133,7 @@ export const SettingsScreen = ({
              </div>
              <button 
                 onClick={handleCustomLimit}
-                className="px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-white/60 hover:text-white transition-colors text-xs font-medium"
+                className="px-3 py-2 bg-white/5 rounded-xl border border-white/5 text-white/60 hover:text-white transition-colors text-xs font-medium"
               >
                 Set Goal
               </button>
@@ -159,7 +159,7 @@ export const SettingsScreen = ({
       {/* 2. Appearance */}
       <section className="space-y-3">
         <h3 className="text-[0.625rem] font-bold uppercase tracking-[0.3em] text-white/30 px-2">Appearance</h3>
-        <GlassCard className="px-5 py-1 divide-y divide-white/5">
+        <GlassCard className="px-3 py-1 divide-y divide-white/5">
           <SettingsItem 
             icon={<Layout className="w-5 h-5 text-purple-400" />}
             title="Scale"
@@ -207,7 +207,7 @@ export const SettingsScreen = ({
       {/* 3. Notifications */}
       <section className="space-y-3">
         <h3 className="text-[0.625rem] font-bold uppercase tracking-[0.3em] text-white/30 px-2">Alerts</h3>
-        <GlassCard className="px-5 py-1 divide-y divide-white/5">
+        <GlassCard className="px-3 py-1 divide-y divide-white/5">
           <SettingsItem 
             icon={<Bell className="w-5 h-5 text-rose-400" />}
             title="Reminders"
@@ -227,7 +227,7 @@ export const SettingsScreen = ({
       {/* 4. Data */}
       <section className="space-y-3">
         <h3 className="text-[0.625rem] font-bold uppercase tracking-[0.3em] text-white/30 px-2">Data</h3>
-        <GlassCard className="px-5 py-1 divide-y divide-white/5">
+        <GlassCard className="px-3 py-1 divide-y divide-white/5">
           <SettingsItem 
             icon={<RefreshCcw className="w-5 h-5 text-indigo-400" />}
             title="Sync"

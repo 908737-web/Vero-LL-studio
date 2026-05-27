@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
-import { BookOpen, Map, Headphones, Sparkles, Plus, Check, ChevronUp, Filter, Search } from 'lucide-react';
+import { BookOpen, Map, Headphones, Sparkles, Plus, Check, ChevronUp, Filter, Search, ArrowLeft, Film, Compass, Tv, Youtube, Play } from 'lucide-react';
 import { DiscoveryTile } from '../components/DiscoveryTile';
 import { CinematicBackground } from '../components/CinematicBackground';
 
@@ -10,6 +10,7 @@ interface Package {
   description: string;
   icon: any;
   color: string;
+  thumbnail?: string;
 }
 
 interface Category {
@@ -28,9 +29,9 @@ const CATEGORIES: Category[] = [
   {
     id: 'vocab',
     title: 'Vocabulary Realm',
-    subtitle: 'VENETIAN GLASS',
+    subtitle: 'PALAZZO DUCALE',
     icon: BookOpen,
-    image: 'https://images.unsplash.com/photo-1514890547357-a9ee2887a35f?auto=format&fit=crop&q=80&w=1000',
+    image: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&q=80&w=1000',
     video: 'https://cdn.pixabay.com/video/2016/09/21/5412-183786499_tiny.mp4', 
     color: '#3b82f6',
     size: 'large',
@@ -43,35 +44,41 @@ const CATEGORIES: Category[] = [
   {
     id: 'grammar',
     title: 'Grammar Quest',
-    subtitle: 'LAGOON WHISPERS',
+    subtitle: 'PONTE DI RIALTO',
     icon: Map,
-    image: 'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&q=80&w=1000',
+    image: 'https://images.unsplash.com/photo-1534113414509-0eec2bfb493f?auto=format&fit=crop&q=80&w=1000',
     video: 'https://cdn.pixabay.com/video/2021/08/11/84683-587212450_large.mp4', 
     color: '#10b981',
     size: 'medium',
     packages: [
-      { id: 'congiuntivo', title: 'The Subjunctive Seal', description: 'Express desires in the city of masks.', icon: Map, color: '#10b981' }
+      { id: 'congiuntivo', title: 'The Subjunctive Seal', description: 'Express desires in the city of masks.', icon: Map, color: '#10b981' },
+      { id: 'passato', title: 'Past Tense Relics', description: 'Unlock the history of the old canal routes.', icon: Map, color: '#10b981' },
+      { id: 'prepositions', title: 'Bridge Prepositions', description: 'Navigate through the tight alleys and channels.', icon: Map, color: '#10b981' }
     ]
   },
   {
     id: 'media',
     title: 'Media Archive',
-    subtitle: 'CANALSIDE AUDIO',
+    subtitle: 'PIAZZA SAN MARCO',
     icon: Headphones,
-    image: 'https://images.unsplash.com/photo-1493246507139-91e8bef99c17?auto=format&fit=crop&q=80&w=1000',
-    video: 'https://cdn.pixabay.com/video/2023/11/14/188981-884841968_large.mp4',
+    image: 'https://images.unsplash.com/photo-1512100356136-7729860ef796?auto=format&fit=crop&q=80&w=1000',
+    video: 'https://assets.mixkit.co/videos/preview/mixkit-venice-canal-with-gondolas-and-historic-buildings-42643-large.mp4',
     color: '#8b5cf6',
     size: 'vertical',
     packages: [
-      { id: 'podcast', title: 'Echoes of Venice', description: 'Tales from the Rialto Bridge.', icon: Headphones, color: '#8b5cf6' }
+      { id: 'podcast', title: 'Echoes of Venice', description: 'Tales from the Rialto Bridge.', icon: Headphones, color: '#8b5cf6', thumbnail: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&q=80' },
+      { id: 'cinema', title: 'Classic Cinema', description: 'Timeless Italian masterpieces.', icon: Film, color: '#8b5cf6', thumbnail: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80' },
+      { id: 'docs', title: 'Documentaries', description: 'Deep dives into history.', icon: Compass, color: '#8b5cf6', thumbnail: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80' },
+      { id: 'news', title: 'News & Live', description: 'Current events from Italy.', icon: Tv, color: '#8b5cf6', thumbnail: 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&q=80' },
+      { id: 'vlogs', title: 'Daily Vlogs', description: 'Everyday life in the streets.', icon: Youtube, color: '#8b5cf6', thumbnail: 'https://images.unsplash.com/photo-1588694851213-911e38dd4955?auto=format&fit=crop&q=80' }
     ]
   },
   {
     id: 'culture',
     title: 'Heritage Nuggets',
-    subtitle: 'NICHES OF HISTORY',
+    subtitle: 'PONTE DEI SOSPIRI',
     icon: Sparkles,
-    image: 'https://images.unsplash.com/photo-1516483642781-71dbad03d46f?auto=format&fit=crop&q=80&w=1000',
+    image: 'https://images.unsplash.com/photo-1517941823-815bea90d291?auto=format&fit=crop&q=80&w=1000',
     video: 'https://cdn.pixabay.com/video/2019/04/17/22880-331580175_large.mp4',
     color: '#f59e0b',
     size: 'small',
@@ -88,6 +95,7 @@ interface DiscoveryProps {
   themeColor: string;
   setThemeColor: (color: string) => void;
   isDarkMode?: boolean;
+  onDeepViewChange?: (isDeep: boolean) => void;
 }
 
 const PackageCardButton: React.FC<{ isActive: boolean, onAddPackage: (pkg: Package, coords?: { x: number, y: number }) => void, pkg: Package, isDarkMode: boolean }> = ({ isActive, onAddPackage, pkg, isDarkMode }) => {
@@ -142,34 +150,20 @@ const PackageCardButton: React.FC<{ isActive: boolean, onAddPackage: (pkg: Packa
   );
 };
 
-const PackageCard: React.FC<{ pkg: Package, isActive: boolean, onAddPackage: (pkg: Package, coords?: { x: number, y: number }) => void, themeColor: string, isDarkMode: boolean }> = ({ pkg, isActive, onAddPackage, themeColor, isDarkMode }) => {
+const PackageCard: React.FC<{ pkg: Package, isActive: boolean, onAddPackage: (pkg: Package, coords?: { x: number, y: number }) => void, isDarkMode: boolean }> = ({ pkg, isActive, onAddPackage, isDarkMode }) => {
   return (
-    <div
-      className="relative p-4 rounded-[24px] border border-white/20 flex flex-col gap-1.5 overflow-hidden w-[275px] h-[95px] shrink-0 shadow-md"
-      style={{ 
-        background: isDarkMode 
-          ? `linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)`
-          : `linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)`, 
-        backdropFilter: `blur(25px)`,
-        WebkitBackdropFilter: `blur(25px)`,
-        boxShadow: `0 10px 25px -5px ${themeColor}${isDarkMode ? '20' : '30'}, 0 5px 10px -5px rgba(255,255,255,0.1)`,
-        borderColor: isDarkMode ? `rgba(255, 255, 255, 0.15)` : `rgba(255, 255, 255, 0.3)`
-      }}
-    >
-      <div className="flex items-center justify-between pointer-events-none">
-         <div className="flex items-center gap-1.5 relative z-10 w-full pr-5">
-           <div className="p-0 border-0 shrink-0 opacity-80" style={{ color: pkg.color || '#fff' }}>
-             <pkg.icon size={16} strokeWidth={1.5} />
-           </div>
-           <h4 className={`${isDarkMode ? 'text-white' : 'text-slate-900'} font-bold text-[13px] tracking-tight leading-tight`}>{pkg.title}</h4>
+    <div className="discovery-pack-card">
+      <div className="flex items-center gap-1.5 mb-2 pointer-events-none">
+         <div style={{ color: pkg.color || '#fff' }}>
+           <pkg.icon size={20} strokeWidth={1.5} />
          </div>
+         <h2 className="!my-0 leading-tight">{pkg.title}</h2>
       </div>
-      
-      <div className={`${isDarkMode ? 'text-white/60' : 'text-slate-700/70'} text-[11px] font-medium leading-relaxed mt-1 flex-1`}>
+      <p className="flex-1 pointer-events-none !text-[0.75rem] font-normal leading-tight opacity-70">
         {pkg.description}
-      </div>
+      </p>
       
-      <div className="flex justify-end mt-1 relative z-10">
+      <div className="flex justify-start relative z-10 w-fit pointer-events-auto mt-2">
          <PackageCardButton isActive={isActive} onAddPackage={onAddPackage} pkg={pkg} isDarkMode={isDarkMode} />
       </div>
     </div>
@@ -177,32 +171,64 @@ const PackageCard: React.FC<{ pkg: Package, isActive: boolean, onAddPackage: (pk
 };
 
 const PackageStack3D: React.FC<{ title: string, data: Package[], onAddPackage: (pkg: Package, coords?: { x: number, y: number }) => void, activePackageIds: string[], themeColor: string, isDarkMode: boolean }> = ({ title, data, onAddPackage, activePackageIds, themeColor, isDarkMode }) => {
+  const [packages, setPackages] = useState(data);
+
+  const handleDragEnd = (event: any, info: any) => {
+    if (Math.abs(info.offset.x) > 50 || Math.abs(info.offset.y) > 50) {
+      setPackages((prev) => {
+        const next = [...prev];
+        const top = next.shift();
+        if (top) next.push(top);
+        return next;
+      });
+    }
+  };
+
   return (
-    <div className="w-full">
-      <h3 className={`px-6 text-xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} tracking-tight mb-4`}>{title}</h3>
-      <div className="relative w-full h-[150px] px-6">
-        {data.map((pkg, i) => (
-          <motion.div
-            key={pkg.id}
-            initial={false}
-            animate={{ 
-              scale: 1 - (i * 0.04), 
-              y: i * 12,
-              rotate: i > 0 ? (i % 2 === 0 ? 1.5 : -1.5) : 0,
-              zIndex: data.length - i 
-            }}
-            transition={{ type: 'spring', damping: 20, stiffness: 200 }}
-            className="absolute left-6 origin-bottom"
-          >
-            <PackageCard 
-              pkg={pkg} 
-              isActive={activePackageIds.includes(pkg.id)}
-              onAddPackage={onAddPackage}
-              themeColor={themeColor}
-              isDarkMode={isDarkMode}
-            />
-          </motion.div>
-        ))}
+    <div className="w-full flex flex-col justify-center items-center relative py-6 mt-4">
+      <div className="w-full px-3 flex flex-col items-start gap-3">
+          <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} tracking-tight`}>{title}</h3>
+      </div>
+      
+      <div className="relative w-[280px] h-[190px] flex justify-center items-center mt-6">
+        <div className="discovery-pack-accents">
+            <div className="acc-card"></div>
+            <div className="acc-card"></div>
+            <div className="acc-card"></div>
+            <div className="light"></div><div className="light sm"></div>
+            <div className="top-light-neon"></div>
+        </div>
+
+        {packages.map((pkg, i) => {
+          const isTop = i === 0;
+          return (
+            <motion.div
+              key={pkg.id}
+              initial={false}
+              animate={{ 
+                scale: 1 - (i * 0.05), 
+                y: 0,
+                x: 0,
+                zIndex: data.length - i 
+              }}
+              transition={{ type: 'spring', damping: 20, stiffness: 200 }}
+              className="absolute shrink-0 flex justify-center items-center origin-center"
+              drag={isTop ? true : false}
+              dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+              dragElastic={0.8}
+              onDragEnd={isTop ? handleDragEnd : undefined}
+              whileDrag={{ scale: 1.05, cursor: 'grabbing' }}
+              style={{ cursor: isTop ? 'grab' : 'auto' }}
+            >
+              <PackageCard 
+                pkg={pkg} 
+                isActive={activePackageIds.includes(pkg.id)}
+                onAddPackage={onAddPackage}
+                isDarkMode={isDarkMode}
+              />
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );
@@ -221,63 +247,106 @@ const CategoryDetailView: React.FC<{ category: Category, onBack: () => void, onA
       exit={{ opacity: 0 }}
       className="absolute inset-0 z-20 flex flex-col bg-transparent"
     >
-      <div className="w-full h-full overflow-y-auto overflow-x-hidden scrollbar-hide relative">
-        <header className="px-6 pt-12 pb-8 flex flex-col gap-6 items-center">
-            {/* Search Capsule */}
-            <div className={`h-10 w-4/5 rounded-full border border-white/10 ${isDarkMode ? 'bg-white/5' : 'bg-black/5'} flex items-center px-4 backdrop-blur-xl`}>
-              <Search className={`w-4 h-4 ${isDarkMode ? 'text-white/30' : 'text-black/30'}`} />
-              <input 
-                className={`bg-transparent border-none ml-2 w-full text-sm placeholder:${isDarkMode ? 'text-white/20' : 'text-black/20'} ${isDarkMode ? 'text-white' : 'text-black'}`} 
-                placeholder="Search in Venetian glasses..." 
-              />
-            </div>
-            
-            {/* Title */}
-            <h2 className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} text-center`}>Vocabulary Realm</h2>
-        </header>
 
-        <div className="space-y-16 pb-32">
-          <PackageStack3D 
-            title="Top Picks" 
-            data={allPackages} 
-            onAddPackage={onAddPackage}
-            activePackageIds={activePackageIds}
-            themeColor={themeColor}
-            isDarkMode={isDarkMode}
-          />
-          <PackageStack3D 
-            title="Community Favorites" 
-            data={communityFavs} 
-            onAddPackage={onAddPackage}
-            activePackageIds={activePackageIds}
-            themeColor={themeColor}
-            isDarkMode={isDarkMode}
-          />
-        </div>
+
+      <div className="w-full h-full overflow-y-auto overflow-x-hidden scrollbar-hide relative pt-24">
+        {category.id === 'media' ? (
+          <div className="flex-1 w-full h-[600px] flex justify-center items-center relative z-10 pb-32">
+            <div className="scene w-full h-[400px]">
+                <div className="a3d" style={{ '--n': allPackages.length } as React.CSSProperties}>
+                    {allPackages.map((pkg, idx) => {
+                      const isActive = activePackageIds.includes(pkg.id);
+                      return (
+                        <div 
+                           key={pkg.id} 
+                           onClick={() => !isActive && onAddPackage(pkg)}
+                           className={`scene-card relative overflow-hidden group cursor-pointer border ${isActive ? 'border-primary ring-2 ring-primary ring-offset-2 ring-offset-[#030712]' : 'border-white/10'}`} 
+                           style={{ '--i': idx } as React.CSSProperties}
+                        >
+                            <div 
+                              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                              style={{ backgroundImage: `url(${pkg.thumbnail || ''})` }}
+                            />
+                            
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:opacity-90" />
+
+                            <div className="absolute inset-0 p-5 flex flex-col justify-end text-white text-left">
+                                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full">
+                                    <pkg.icon className="w-4 h-4 text-white" />
+                                </div>
+                                <div className="relative z-10 transform transition-transform duration-300 group-hover:-translate-y-2">
+                                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#a78bfa] mb-2 block drop-shadow-sm">
+                                    {isActive ? 'ADDED' : pkg.description}
+                                  </span>
+                                  <h3 className="font-serif text-xl font-bold leading-tight drop-shadow-md mb-2">
+                                    {pkg.title}
+                                  </h3>
+                                  {!isActive && (
+                                    <div className="flex items-center gap-1.5 text-xs font-medium text-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute bottom-[-18px]">
+                                      <Plus className="w-3.5 h-3.5" fill="currentColor" />
+                                      <span>Add to learning path</span>
+                                    </div>
+                                  )}
+                                  {isActive && (
+                                    <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-400 absolute bottom-[-18px]">
+                                      <Check className="w-3.5 h-3.5" />
+                                      <span>In your library</span>
+                                    </div>
+                                  )}
+                                </div>
+                            </div>
+                        </div>
+                      )
+                    })}
+                </div>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-0 pb-32">
+            <PackageStack3D 
+              title="Top Picks" 
+              data={allPackages} 
+              onAddPackage={onAddPackage}
+              activePackageIds={activePackageIds}
+              themeColor={themeColor}
+              isDarkMode={isDarkMode}
+            />
+            <PackageStack3D 
+              title="Community Favorites" 
+              data={communityFavs} 
+              onAddPackage={onAddPackage}
+              activePackageIds={activePackageIds}
+              themeColor={themeColor}
+              isDarkMode={isDarkMode}
+            />
+          </div>
+        )}
       </div>
     </motion.div>
   );
 };
 
-export const Discovery: React.FC<DiscoveryProps> = ({ onAddPackage, activePackageIds, themeColor, setThemeColor, isDarkMode = true }) => {
+export const Discovery: React.FC<DiscoveryProps> = ({ onAddPackage, activePackageIds, themeColor, setThemeColor, isDarkMode = true, onDeepViewChange }) => {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
   const handleCategorySelect = (cat: Category) => {
     setSelectedCategory(cat);
     setThemeColor(cat.color);
+    onDeepViewChange?.(true);
   };
 
   const handleBack = () => {
     setSelectedCategory(null);
     setThemeColor('');
+    onDeepViewChange?.(false);
   };
 
   return (
     <div className="relative w-full h-full overflow-hidden">
       <CinematicBackground 
-        videoUrl={selectedCategory?.video} 
-        isActive={!!selectedCategory} 
-        themeColor={themeColor} 
+        videoUrl={selectedCategory?.video || "https://assets.mixkit.co/videos/preview/mixkit-venice-canal-with-gondolas-and-historic-buildings-42643-large.mp4"} 
+        isActive={true} 
+        themeColor={themeColor || '#8b5cf6'} 
         isDarkMode={isDarkMode}
       />
 
@@ -288,7 +357,7 @@ export const Discovery: React.FC<DiscoveryProps> = ({ onAddPackage, activePackag
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 1.1 }}
-            className="w-full h-full p-4 grid grid-cols-2 auto-rows-[160px] gap-4 pb-24 overflow-y-auto scrollbar-hide"
+            className="w-full h-full grid grid-cols-2 auto-rows-[134px] gap-[10px] pt-24 pb-32 overflow-y-auto scrollbar-hide px-3"
           >
             {CATEGORIES.map((cat) => (
               <DiscoveryTile

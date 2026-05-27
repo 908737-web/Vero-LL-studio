@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ArrowUpDown, BookOpen, Calendar, ChevronRight, Flame, Headphones, LayoutGrid, Library, MessageSquare, PenTool, Search, Settings, Trophy, User, Youtube, FlaskConical, Plus, X, Zap } from 'lucide-react';
+import { ArrowUpDown, ArrowLeft, BookOpen, Calendar, ChevronRight, Flame, Headphones, LayoutGrid, Library, MessageSquare, PenTool, Search, Settings, Trophy, User, Youtube, FlaskConical, Plus, X, Zap } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useState, useEffect, useRef } from 'react';
 import GridLayout, { WidthProvider } from "react-grid-layout/legacy";
@@ -19,6 +19,7 @@ import { GlassCard } from './components/GlassCard';
 import { SettingsScreen } from './components/SettingsScreen';
 import { BioPortal, StudyState } from './components/BioPortal';
 import { BottomNav } from './components/BottomNav';
+import { DynamicHomeBar } from './components/DynamicHomeBar';
 import { BackgroundEffects } from './components/BackgroundEffects';
 import { AudioPlayer } from './components/AudioPlayer';
 import { AddMenu, AVAILABLE_ITEMS } from './components/AddMenu';
@@ -38,19 +39,28 @@ const initialLayout: Layout[] = [
   { i: 'smartlib', x: 0, y: 8, w: 4, h: 2, minW: 2, minH: 1 },
 ];
 
-type AppView = 'dashboard' | 'study' | 'discover' | 'dictionary' | 'salotto';
+type AppView = 'dashboard' | 'study' | 'grammar-study' | 'listening-study' | 'verblab-study' | 'story-study' | 'cinema-study' | 'discover' | 'dictionary' | 'salotto';
 
 import { Discovery } from './views/Discovery';
 import { Dictionary } from './views/Dictionary';
+import { GrammarStudyView } from './views/GrammarStudyView';
+import { ListeningStudyView } from './views/ListeningStudyView';
+import { VerbLabView } from './views/VerbLabView';
+import { StoryView } from './views/StoryView';
+import { CinemaView } from './views/CinemaView';
+import { SalottoView } from './views/Salotto';
 import { LaboratorioOverlay } from './components/LaboratorioOverlay';
 import { UserProfileScreen } from './views/UserProfileScreen';
 import { UserProfileDrawer } from './components/UserProfileDrawer';
+import { SettingsDrawer } from './components/SettingsDrawer';
+import { WordListDrawer } from './components/WordListDrawer';
 
 export default function App() {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [view, setView] = useState<AppView>('dashboard');
   const [gridState, setGridState] = useState<Layout[]>(initialLayout);
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [isWordListDrawerOpen, setIsWordListDrawerOpen] = useState(false);
   const [contentVersion, setContentVersion] = useState(1);
   const [isLabOpen, setIsLabOpen] = useState(false);
 
@@ -106,6 +116,7 @@ export default function App() {
 
   const [streak, setStreak] = useState(12);
   const [dailyGoal, setDailyGoal] = useState<DailyGoal>({ cardTarget: 20, cardsReviewedToday: 0 });
+  const [isDiscoveryDeepView, setIsDiscoveryDeepView] = useState(false);
   const [selectedPackages, setSelectedPackages] = useState<Record<string, string>>({
     vocab: 'business',
     grammar: 'congiuntivo',
@@ -121,6 +132,23 @@ export default function App() {
     const pkgs = MODULE_PACKAGES[moduleId] || [];
     const found = pkgs.find(p => p.id === pkgId);
     return found ? found.name : 'PACKAGES';
+  };
+
+  const handleGenericBack = () => {
+    if (showAddMenu) { setShowAddMenu(false); return; }
+    if (isLabOpen) { setIsLabOpen(false); return; }
+    if (isPackageSelectorOpen) { setIsPackageSelectorOpen(false); return; }
+    if (isProfileDrawerOpen) { setIsProfileDrawerOpen(false); return; }
+    if (isSettingsDrawerOpen) { setIsSettingsDrawerOpen(false); return; }
+    if (isWordListDrawerOpen) { setIsWordListDrawerOpen(false); return; }
+    if (isDiscoveryDeepView) { setIsDiscoveryDeepView(false); setDiscoveryThemeColor(''); return; }
+    if (view === 'study' || view === 'grammar-study' || view === 'listening-study' || view === 'verblab-study' || view === 'story-study' || view === 'cinema-study') { setView('dashboard'); return; }
+  };
+
+  const handleHomeTap = () => {
+    if (view !== 'dashboard') {
+      setView('dashboard');
+    }
   };
   const [isHeatmapExpanded, setIsHeatmapExpanded] = useState(false);
   const [discoveryThemeColor, setDiscoveryThemeColor] = useState('');
@@ -155,6 +183,7 @@ export default function App() {
   const [selectorModuleId, setSelectorModuleId] = useState<string | null>(null);
   const [expandedModule, setExpandedModule] = useState<'vocab' | 'grammar' | null>(null);
   const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState(false);
+  const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false);
 
   const [uiScale, setUiScale] = useState<'small' | 'medium' | 'large'>('medium');
 
@@ -260,55 +289,66 @@ export default function App() {
         </div>
 
         {/* Main Container */}
-        <div className={`relative z-10 max-w-[26.875rem] mx-auto flex flex-col pt-safe px-6 pb-20 h-full overflow-hidden`}>
-          <header className={`flex items-center justify-between z-10 shrink-0 ${view === 'study' ? 'h-[10%]' : 'py-6'}`}>
-            <div className="flex items-center space-x-4">
-              {view === 'dashboard' ? (
-                <div className="relative z-50">
-                  <BioPortal
-                    studyState={portalState}
-                    currentTheme={currentTheme}
-                  />
-                </div>
-              ) : view !== 'discover' ? (
+        <div className={`relative z-10 max-w-[26.875rem] mx-auto flex flex-col pt-safe h-full overflow-hidden px-3`}>
+          {/* Floating Top Elements */}
+          <div className="absolute top-0 left-0 right-0 w-full pt-8 px-3 pointer-events-none z-[150] flex justify-between items-start">
+            {/* Left Box: Profile */}
+            <div className="pointer-events-auto">
+              {view === 'dashboard' && (
                 <button 
-                  onClick={() => setView('dashboard')}
-                  className="glass p-3 rounded-2xl border-white/20 text-white/60 hover:text-white transition-colors"
-                  aria-label="Back to dashboard"
-                >
-                  <ChevronRight className="w-5 h-5 rotate-180" />
-                </button>
-              ) : null}
-              <div className="flex flex-col text-left">
-                <div 
-                  className="flex items-center gap-1.5 cursor-pointer active:scale-95 transition-transform"
                   onClick={() => setIsProfileDrawerOpen(true)}
+                  className={`flex items-center gap-2.5 p-1.5 pr-4 rounded-[20px] border ${isDarkMode ? 'border-white/10 bg-white/5 hover:bg-white/10' : 'border-slate-200 bg-white/80 hover:bg-white/100'} backdrop-blur-xl transition-all shadow-lg text-left group`}
                 >
-                  <span className={`${textColor} text-lg font-semibold tracking-tight`}>
-                    {view === 'discover' ? '' : 'Salman Arab'}
-                  </span>
-                </div>
-              </div>
+                  <div className={`w-9 h-9 rounded-[14px] overflow-hidden border-2 transition-all ${isDarkMode ? 'border-white/20 group-hover:border-white/40' : 'border-slate-200 group-hover:border-slate-300'}`}>
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=256&auto=format&fit=crop" alt="Luca Romano" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex flex-col justify-center">
+                    <span className={`text-[9px] font-black uppercase tracking-[0.15em] ${isDarkMode ? 'text-white/40' : 'text-slate-500'}`}>BENTORNATO</span>
+                    <span className={`text-[13px] font-bold tracking-tight leading-none mt-0.5 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Luca Romano</span>
+                  </div>
+                </button>
+              )}
             </div>
-            
-            <div className="flex items-center gap-3 relative z-[150]">
+
+            {/* Right Box: Actions */}
+            <div className="flex items-center gap-3 pointer-events-auto">
               {(view === 'dashboard' || view === 'study') && (
                 <button 
-                  onClick={() => setShowAddMenu(!showAddMenu)}
-                  className={`p-3 glass rounded-full border border-white/20 ${isDarkMode ? 'text-white' : 'text-slate-800'} hover:bg-white/10 transition-all text-xl`}
+                  onClick={() => view === 'study' ? setIsWordListDrawerOpen(true) : setShowAddMenu(!showAddMenu)}
+                  className={`w-11 h-11 flex flex-col items-center justify-center glass rounded-full border ${isDarkMode ? 'border-white/10 bg-white/5' : 'border-slate-200 bg-white/80'} backdrop-blur-xl hover:bg-white/20 transition-all duration-300 shadow-lg relative`}
+                  style={{ transform: showAddMenu ? 'rotate(-90deg)' : 'rotate(0deg)' }}
                 >
-                  {showAddMenu ? <X size={20} /> : <ArrowUpDown size={20} />}
+                  <div className="flex flex-col items-center justify-center gap-[4px] w-[18px]">
+                    <div 
+                      className={`w-full h-[2.5px] rounded-full transition-all duration-300 ${isDarkMode ? 'bg-white' : 'bg-slate-800'}`}
+                      style={{
+                        transformOrigin: 'left',
+                        transform: showAddMenu ? 'translateY(6px) rotate(-45deg)' : 'translateY(0) rotate(0)',
+                        zIndex: 2
+                      }}
+                    />
+                    <div 
+                      className={`w-full h-[2.5px] rounded-full transition-all duration-300 ${isDarkMode ? 'bg-white' : 'bg-slate-800'}`}
+                      style={{
+                        opacity: showAddMenu ? 0 : 1,
+                        transform: showAddMenu ? 'translateX(10px)' : 'translateX(0)',
+                        zIndex: 1
+                      }}
+                    />
+                    <div 
+                      className={`w-full h-[2.5px] rounded-full transition-all duration-300 ${isDarkMode ? 'bg-white' : 'bg-slate-800'}`}
+                      style={{
+                        transformOrigin: 'left',
+                        transform: showAddMenu ? 'translateY(-6px) rotate(45deg)' : 'translateY(0) rotate(0)',
+                        zIndex: 2
+                      }}
+                    />
+                  </div>
                 </button>
               )}
-              {view !== 'dashboard' && view !== 'study' && (
-                  <button 
-                    className={`p-3 glass rounded-full border border-white/20 ${isDarkMode ? 'text-white' : 'text-slate-800'} hover:bg-white/10 transition-all text-xl`}
-                  >
-                    <Search size={20} />
-                  </button>
-              )}
+
             </div>
-          </header>
+          </div>
 
           <AnimatePresence mode="wait">
             {view === 'dashboard' && (
@@ -321,7 +361,7 @@ export default function App() {
               >
               {/* Asymmetrical Bento Grid - Dynamic Ecosystem */}
               <div 
-                className="w-full h-full overflow-y-auto pb-6 scrollbar-hide pt-1 font-sans relative"
+                className="w-full h-full overflow-y-auto pb-32 scrollbar-hide pt-24 font-sans relative"
               >
                   <ReactGridLayout
                     className="layout"
@@ -349,7 +389,7 @@ export default function App() {
                         }}
                       >
                         <div
-                          className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative"
+                          className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative @container"
                           onClick={() => setView('study')}
                         >
                           {/* Active Package Glowing Orb */}
@@ -374,22 +414,22 @@ export default function App() {
                             </svg>
                           </div>
 
-                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
+                          <div className="relative z-10 w-full h-full p-2.5 @xs:p-3 @sm:p-4 flex flex-col justify-between">
                             <div>
-                                <div className="bg-blue-500/20 w-fit p-2.5 rounded-2xl border border-blue-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
-                                  <BookOpen className="w-5 h-5 text-blue-400" />
+                                <div className="bg-blue-500/20 w-fit p-1.5 @xs:p-2.5 rounded-2xl border border-blue-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-1.5 @xs:mb-3">
+                                  <BookOpen className="w-4 h-4 @xs:w-5 @xs:h-5 text-blue-400" />
                                 </div>
                                 <div className="min-w-0">
-                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                  <h3 className={isDarkMode ? "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
                                     Vocabulary Realm
                                   </h3>
-                                  <p className="text-blue-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                  <p className="text-blue-400/80 text-[clamp(0.55rem,5cqw,0.65rem)] font-bold uppercase tracking-widest mt-0.5 @xs:mt-1 line-clamp-1 @xs:line-clamp-2 leading-relaxed">
                                     Mastering Essential Lexis
                                   </p>
                                 </div>
                             </div>
                             
-                            <div className="mt-auto flex justify-start">
+                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start @max-xs:w-full">
                               <LiquidCapsuleButton 
                                 label={getSelectedPackageName('vocab')}
                                 onClick={() => {
@@ -416,8 +456,8 @@ export default function App() {
                         }}
                       >
                         <div
-                          className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative"
-                          onClick={() => setView('study')}
+                          className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative @container"
+                          onClick={() => setView('grammar-study')}
                         >
                           {/* Syntax Connections SVG Schematic Background */}
                           <div className="absolute inset-0 opacity-25 pointer-events-none">
@@ -474,21 +514,21 @@ export default function App() {
                             </svg>
                           </div>
 
-                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
+                          <div className="relative z-10 w-full h-full p-2.5 @xs:p-3 @sm:p-4 flex flex-col justify-between">
                             <div>
-                                <div className="bg-emerald-500/20 w-fit p-2.5 rounded-2xl border border-emerald-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
-                                  <MessageSquare className="w-5 h-5 text-emerald-400" />
+                                <div className="bg-emerald-500/20 w-fit p-1.5 @xs:p-2.5 rounded-2xl border border-emerald-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-1.5 @xs:mb-3">
+                                  <MessageSquare className="w-4 h-4 @xs:w-5 @xs:h-5 text-emerald-400" />
                                 </div>
                                 <div className="min-w-0">
-                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                  <h3 className={isDarkMode ? "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
                                     Grammar Core
                                   </h3>
-                                  <p className="text-emerald-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                  <p className="text-emerald-400/80 text-[clamp(0.55rem,5cqw,0.65rem)] font-bold uppercase tracking-widest mt-0.5 @xs:mt-1 line-clamp-1 @xs:line-clamp-2 leading-relaxed">
                                     Structured Syntax
                                   </p>
                                 </div>
                             </div>
-                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start">
+                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start @max-xs:w-full">
                               <LiquidCapsuleButton 
                                 label={getSelectedPackageName('grammar')}
                                 onClick={() => {
@@ -515,8 +555,8 @@ export default function App() {
                         }}
                       >
                         <div
-                           className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative"
-                          onClick={() => setView('study')}
+                           className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative @container"
+                          onClick={() => setView('listening-study')}
                         >
                           {/* Soundwave background */}
                           <div className="absolute inset-0 flex items-center justify-center gap-[2px] opacity-20 pointer-events-none">
@@ -531,21 +571,21 @@ export default function App() {
                             ))}
                           </div>
 
-                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
+                          <div className="relative z-10 w-full h-full p-2.5 @xs:p-3 @sm:p-4 flex flex-col justify-between">
                             <div>
-                                <div className="bg-purple-500/20 w-fit p-2.5 rounded-2xl border border-purple-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
-                                  <Headphones className="w-5 h-5 text-purple-400" />
+                                <div className="bg-purple-500/20 w-fit p-1.5 @xs:p-2.5 rounded-2xl border border-purple-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-1.5 @xs:mb-3">
+                                  <Headphones className="w-4 h-4 @xs:w-5 @xs:h-5 text-purple-400" />
                                 </div>
                                 <div className="min-w-0">
-                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                  <h3 className={isDarkMode ? "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
                                     Listening Lab
                                   </h3>
-                                  <p className="text-purple-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                  <p className="text-purple-400/80 text-[clamp(0.55rem,5cqw,0.65rem)] font-bold uppercase tracking-widest mt-0.5 @xs:mt-1 line-clamp-1 @xs:line-clamp-2 leading-relaxed">
                                     Aural Comprehension
                                   </p>
                                 </div>
                             </div>
-                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start">
+                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start @max-xs:w-full">
                               <LiquidCapsuleButton 
                                 label={getSelectedPackageName('listening')}
                                 onClick={() => {
@@ -572,8 +612,8 @@ export default function App() {
                         }}
                       >
                         <div
-                          className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative"
-                          onClick={() => setView('study')}
+                          className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative @container"
+                          onClick={() => setView('verblab-study')}
                         >
                           {/* Abstract Conjugation Background */}
                           <div className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none flex flex-col justify-around text-pink-400 font-mono text-[0.6rem] font-bold leading-tight select-none px-2 transform -rotate-12 scale-150">
@@ -598,21 +638,21 @@ export default function App() {
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border border-pink-400/30 border-dashed animate-[spin_10s_linear_infinite]" />
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-pink-400/20 animate-[spin_7s_linear_infinite_reverse]" />
 
-                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
+                          <div className="relative z-10 w-full h-full p-2.5 @xs:p-3 @sm:p-4 flex flex-col justify-between">
                             <div>
-                                <div className="bg-pink-500/20 w-fit p-2.5 rounded-2xl border border-pink-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
-                                  <FlaskConical className="w-5 h-5 text-pink-400" />
+                                <div className="bg-pink-500/20 w-fit p-1.5 @xs:p-2.5 rounded-2xl border border-pink-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-1.5 @xs:mb-3">
+                                  <FlaskConical className="w-4 h-4 @xs:w-5 @xs:h-5 text-pink-400" />
                                 </div>
                                 <div className="min-w-0">
-                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                  <h3 className={isDarkMode ? "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
                                     Verb Lab
                                   </h3>
-                                  <p className="text-pink-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                  <p className="text-pink-400/80 text-[clamp(0.55rem,5cqw,0.65rem)] font-bold uppercase tracking-widest mt-0.5 @xs:mt-1 line-clamp-1 @xs:line-clamp-2 leading-relaxed">
                                     Dynamic Conjugation
                                   </p>
                                 </div>
                             </div>
-                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start">
+                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start @max-xs:w-full">
                               <LiquidCapsuleButton 
                                 label={getSelectedPackageName('verblab')}
                                 onClick={() => {
@@ -639,31 +679,34 @@ export default function App() {
                         }}
                       >
                         <div
-                          className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative"
-                          onClick={() => setView('study')}
+                          className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative @container"
+                          onClick={() => setView('story-study')}
                         >
                           {/* Animated Text Lines Background */}
-                          <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-15 pointer-events-none">
+                          <div
+                            className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-15 pointer-events-none"
+                          >
+
                             <motion.div className="h-1 bg-amber-500/50 rounded-full" animate={{ width: ['60%', '90%', '60%'] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }} />
                             <motion.div className="h-1 bg-amber-500/50 rounded-full w-[80%]" animate={{ width: ['80%', '50%', '80%'] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }} />
                             <motion.div className="h-1 bg-amber-500/50 rounded-full w-[70%]" animate={{ width: ['70%', '100%', '70%'] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }} />
                           </div>
 
-                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
+                          <div className="relative z-10 w-full h-full p-2.5 @xs:p-3 @sm:p-4 flex flex-col justify-between">
                             <div>
-                                <div className="bg-amber-500/20 w-fit p-2.5 rounded-2xl border border-amber-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
-                                  <PenTool className="w-5 h-5 text-amber-400" />
+                                <div className="bg-amber-500/20 w-fit p-1.5 @xs:p-2.5 rounded-2xl border border-amber-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-1.5 @xs:mb-3">
+                                  <PenTool className="w-4 h-4 @xs:w-5 @xs:h-5 text-amber-400" />
                                 </div>
                                 <div className="min-w-0">
-                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                  <h3 className={isDarkMode ? "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
                                     Stories Repo
                                   </h3>
-                                  <p className="text-amber-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                  <p className="text-amber-400/80 text-[clamp(0.55rem,5cqw,0.65rem)] font-bold uppercase tracking-widest mt-0.5 @xs:mt-1 line-clamp-1 @xs:line-clamp-2 leading-relaxed">
                                     Narrative Comprehension
                                   </p>
                                 </div>
                             </div>
-                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start">
+                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start @max-xs:w-full">
                               <LiquidCapsuleButton 
                                 label={getSelectedPackageName('stories')}
                                 onClick={() => {
@@ -690,8 +733,8 @@ export default function App() {
                         }}
                       >
                         <div
-                          className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative"
-                          onClick={() => setView('study')}
+                          className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative @container"
+                          onClick={() => setView('cinema-study')}
                         >
                           {/* YouTube Red Play Button Background Decor */}
                           <div className="absolute -bottom-6 -right-6 opacity-20 pointer-events-none">
@@ -703,21 +746,21 @@ export default function App() {
                             </motion.div>
                           </div>
 
-                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
+                          <div className="relative z-10 w-full h-full p-2.5 @xs:p-3 @sm:p-4 flex flex-col justify-between">
                             <div>
-                                <div className="bg-red-500/20 w-fit p-2.5 rounded-2xl border border-red-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
-                                  <Youtube className="w-5 h-5 text-red-400" />
+                                <div className="bg-red-500/20 w-fit p-1.5 @xs:p-2.5 rounded-2xl border border-red-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-1.5 @xs:mb-3">
+                                  <Youtube className="w-4 h-4 @xs:w-5 @xs:h-5 text-red-400" />
                                 </div>
                                 <div className="min-w-0">
-                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                  <h3 className={isDarkMode ? "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
                                     Cinema Realm
                                   </h3>
-                                  <p className="text-red-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                  <p className="text-red-400/80 text-[clamp(0.55rem,5cqw,0.65rem)] font-bold uppercase tracking-widest mt-0.5 @xs:mt-1 line-clamp-1 @xs:line-clamp-2 leading-relaxed">
                                     Authentic Media Elements
                                   </p>
                                 </div>
                             </div>
-                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start">
+                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start @max-xs:w-full">
                               <LiquidCapsuleButton 
                                 label={getSelectedPackageName('youtube')}
                                 onClick={() => {
@@ -744,11 +787,11 @@ export default function App() {
                         }}
                       >
                         <div
-                          className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative"
+                          className="w-full h-full cursor-pointer rounded-[24px] overflow-hidden relative @container"
                           onClick={() => setView('study')}
                         >
                           {/* Glass Shelves Background */}
-                          <div className="absolute inset-0 flex flex-col justify-center gap-6 opacity-30 pointer-events-none px-4">
+                          <div className="absolute inset-0 flex flex-col justify-center gap-6 opacity-30 pointer-events-none px-3">
                             <div className="w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent relative">
                               {/* Glowing Book on Shelf - Active */}
                               <div className="absolute bottom-0 left-[20%] w-6 h-12 bg-cyan-400/40 rounded-sm shadow-[0_0_15px_rgba(34,211,238,0.5)] border-[0.5px] border-cyan-300/50 transform -skew-x-6" />
@@ -761,21 +804,21 @@ export default function App() {
                             </div>
                           </div>
 
-                          <div className="relative z-10 w-full h-full p-4 flex flex-col justify-between">
+                          <div className="relative z-10 w-full h-full p-2.5 @xs:p-3 @sm:p-4 flex flex-col justify-between">
                             <div>
-                                <div className="bg-cyan-500/20 w-fit p-2.5 rounded-2xl border border-cyan-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-3">
-                                  <Library className="w-5 h-5 text-cyan-400" />
+                                <div className="bg-cyan-500/20 w-fit p-1.5 @xs:p-2.5 rounded-2xl border border-cyan-500/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform shrink-0 mb-1.5 @xs:mb-3">
+                                  <Library className="w-4 h-4 @xs:w-5 @xs:h-5 text-cyan-400" />
                                 </div>
                                 <div className="min-w-0">
-                                  <h3 className={isDarkMode ? "text-lg font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-lg font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
+                                  <h3 className={isDarkMode ? "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-white tracking-tight leading-tight line-clamp-1" : "text-[clamp(1rem,10cqw,1.125rem)] font-extrabold text-slate-900 tracking-tight leading-tight line-clamp-1"}>
                                     Smart Library
                                   </h3>
-                                  <p className="text-cyan-400/80 text-[0.65rem] font-bold uppercase tracking-widest mt-1 line-clamp-2 leading-relaxed">
+                                  <p className="text-cyan-400/80 text-[clamp(0.55rem,5cqw,0.65rem)] font-bold uppercase tracking-widest mt-0.5 @xs:mt-1 line-clamp-1 @xs:line-clamp-2 leading-relaxed">
                                     Curated Reading Resources
                                   </p>
                                 </div>
                             </div>
-                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start">
+                            <div className="mt-auto animate-fade-in w-full text-left flex justify-start @max-xs:w-full">
                               <LiquidCapsuleButton 
                                 label={getSelectedPackageName('smartlib')}
                                 onClick={() => {
@@ -799,7 +842,7 @@ export default function App() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.05 }}
-                className="flex-1 min-h-0 mt-2 py-4 z-20"
+                className="flex-1 flex flex-col justify-around min-h-0 mt-2 py-4 gap-4 z-20"
               >
                 <Discovery 
                   onAddPackage={handleDiscoveryAdd} 
@@ -807,6 +850,7 @@ export default function App() {
                   themeColor={discoveryThemeColor}
                   setThemeColor={setDiscoveryThemeColor}
                   isDarkMode={themeMode === 'dark'}
+                  onDeepViewChange={setIsDiscoveryDeepView}
                 />
               </motion.main>
             )}
@@ -817,9 +861,69 @@ export default function App() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.05 }}
-                className="flex-1 min-h-0 mt-2 z-20 flex flex-col"
+                className="flex-1 min-h-0 pt-24 pb-32 z-20 flex flex-col"
               >
                 <Dictionary isDarkMode={isDarkMode} />
+              </motion.main>
+            )}
+
+            {view === 'grammar-study' && (
+              <motion.main 
+                key="grammar-study"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.1 }}
+                className="h-[90%] w-full flex flex-col items-center absolute inset-0 z-50"
+              >
+                <GrammarStudyView onBack={handleGenericBack} isDarkMode={isDarkMode} />
+              </motion.main>
+            )}
+
+            {view === 'story-study' && (
+              <motion.main 
+                key="story-study"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.1 }}
+                className="h-[90%] w-full flex flex-col items-center absolute inset-0 z-50"
+              >
+                <StoryView onBack={handleGenericBack} isDarkMode={isDarkMode} />
+              </motion.main>
+            )}
+
+            {view === 'cinema-study' && (
+              <motion.main 
+                key="cinema-study"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.1 }}
+                className="h-[90%] w-full flex flex-col items-center absolute inset-0 z-50"
+              >
+                <CinemaView onBack={handleGenericBack} isDarkMode={isDarkMode} />
+              </motion.main>
+            )}
+
+            {view === 'listening-study' && (
+              <motion.main 
+                key="listening-study"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.1 }}
+                className="h-[90%] w-full flex flex-col items-center absolute inset-0 z-50"
+              >
+                <ListeningStudyView onBack={handleGenericBack} isDarkMode={isDarkMode} />
+              </motion.main>
+            )}
+
+            {view === 'verblab-study' && (
+              <motion.main 
+                key="verblab-study"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.1 }}
+                className="h-[90%] w-full flex flex-col items-center absolute inset-0 z-50"
+              >
+                <VerbLabView onBack={handleGenericBack} isDarkMode={isDarkMode} />
               </motion.main>
             )}
 
@@ -829,7 +933,7 @@ export default function App() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.1 }}
-                className="h-[90%] flex flex-col items-center"
+                className="h-full flex flex-col items-center pt-24 pb-32"
               >
                 <div className="w-full flex justify-center items-center flex-1 min-h-0">
                   {MOCK_FLASHCARDS[currentCardIndex] ? (
@@ -846,30 +950,65 @@ export default function App() {
             )}
 
             {view === 'salotto' && (
-              <motion.main
-                key="salotto"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.05 }}
-                className="flex-1 min-h-0 mt-2 z-20 flex flex-col items-center justify-center"
-              >
-                <div className={`text-center ${textColor}`}>
-                  <h2 className="text-2xl font-bold mb-2">Il Salotto</h2>
-                  <p className="opacity-60 text-sm">Community Forum coming soon.</p>
-                </div>
-              </motion.main>
+              <SalottoView isDarkMode={isDarkMode} />
             )}
           </AnimatePresence>
-          {/* High-functional floating pill navigation */}
-          <BottomNav 
-            view={view as any} 
-            setView={setView as any} 
-            portalState={portalState}
-            currentTheme={currentTheme}
-            discoveryThemeColor={discoveryThemeColor}
-            isDarkMode={themeMode === 'dark'}
-            onOpenLab={() => setIsLabOpen(true)}
-          />
+
+          {/* Navigation Components */}
+          <div className="absolute bottom-2 left-6 right-6 pointer-events-none z-[150] flex flex-col items-center justify-end pb-safe">
+            <AnimatePresence mode="wait">
+              {(view === 'dashboard' || view === 'discover' || view === 'dictionary' || view === 'salotto') && !isDiscoveryDeepView ? (
+                <motion.div
+                  key="bottom-nav"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="pointer-events-auto w-full flex items-center justify-between px-2"
+                >
+                  {/* Left External Button Placeholder */}
+                  <button 
+                    onClick={() => setIsProfileDrawerOpen(true)}
+                    className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border transition-all duration-300 ${themeMode === 'dark' ? 'border-white/5 text-white/50 bg-white/0 active:bg-white/10 active:text-white' : 'border-slate-300/30 text-slate-400 bg-white/30 active:bg-white/90 active:text-slate-800'} backdrop-blur-sm active:scale-125 hover:opacity-100`}
+                  >
+                    <User size={16} />
+                  </button>
+
+                  <BottomNav 
+                    view={view as any} 
+                    setView={setView as any} 
+                    portalState={portalState}
+                    currentTheme={currentTheme}
+                    discoveryThemeColor={discoveryThemeColor}
+                    isDarkMode={themeMode === 'dark'}
+                    onOpenLab={() => setIsLabOpen(true)}
+                  />
+
+                  {/* Right External Button Placeholder */}
+                  <button 
+                    onClick={() => setIsSettingsDrawerOpen(true)}
+                    className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border transition-all duration-300 ${themeMode === 'dark' ? 'border-white/5 text-white/50 bg-white/0 active:bg-white/10 active:text-white' : 'border-slate-300/30 text-slate-400 bg-white/30 active:bg-white/90 active:text-slate-800'} backdrop-blur-sm active:scale-125 hover:opacity-100`}
+                  >
+                    <Settings size={16} />
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="home-bar"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="pointer-events-auto w-full flex justify-center"
+                >
+                  <DynamicHomeBar
+                    onTap={handleGenericBack}
+                    onSwipeUp={handleGenericBack}
+                    onLongPress={() => setView('dashboard')}
+                    isDarkMode={themeMode === 'dark'}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
         <AddMenu 
           isOpen={showAddMenu} 
@@ -900,6 +1039,28 @@ export default function App() {
           }}
           dailyGoal={dailyGoal}
           setDailyGoal={setDailyGoal}
+        />
+
+        <SettingsDrawer
+          isOpen={isSettingsDrawerOpen}
+          onClose={() => setIsSettingsDrawerOpen(false)}
+          isDarkMode={themeMode === 'dark'}
+          uiScale={uiScale} 
+          setUiScale={setUiScale} 
+          themeMode={themeMode}
+          setThemeMode={(mode) => {
+            setThemeMode(mode);
+            const compatibleTheme = THEMES.find(t => t.mode === mode);
+            if (compatibleTheme) setCurrentTheme(compatibleTheme);
+          }}
+          dailyGoal={dailyGoal}
+          setDailyGoal={setDailyGoal}
+        />
+
+        <WordListDrawer
+          isOpen={isWordListDrawerOpen}
+          onClose={() => setIsWordListDrawerOpen(false)}
+          isDarkMode={themeMode === 'dark'}
         />
 
         <LaboratorioOverlay 

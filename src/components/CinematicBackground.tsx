@@ -18,6 +18,7 @@ export const CinematicBackground = memo<CinematicBackgroundProps>(({
     <AnimatePresence>
       {isActive && videoUrl && (
         <motion.div
+          key={videoUrl}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -27,19 +28,20 @@ export const CinematicBackground = memo<CinematicBackgroundProps>(({
           {/* Base Video Layer */}
           <div className={`absolute inset-0 z-0 ${isDarkMode ? 'bg-slate-950' : 'bg-slate-50'}`}>
             <video
+              key={videoUrl}
               autoPlay
               muted
               loop
               playsInline
               disablePictureInPicture
               style={{ willChange: 'opacity, transform' }}
-              className={`w-full h-full object-cover ${isDarkMode ? 'opacity-40' : 'opacity-30'}`}
+              className={`w-full h-full object-cover ${isDarkMode ? 'opacity-80' : 'opacity-70'}`}
             >
               <source src={videoUrl} type="video/mp4" />
             </video>
-            {/* Ultra-Light crystalline Overlay for iOS 26 Feel */}
-            <div className={`absolute inset-0 backdrop-blur-[40px] saturate-150 ${isDarkMode ? 'bg-slate-900/40' : 'bg-white/40'}`} />
-            <div className={`absolute inset-0 bg-gradient-to-b ${isDarkMode ? 'from-white/5 to-transparent opacity-20' : 'from-black/5 to-transparent opacity-10'}`} />
+            {/* Subtle overlay for contrast and legibility, retaining some premium styling with low blur */}
+            <div className={`absolute inset-0 backdrop-blur-[2px] saturate-125 ${isDarkMode ? 'bg-slate-950/40' : 'bg-white/30'}`} />
+            <div className={`absolute inset-0 bg-gradient-to-b ${isDarkMode ? 'from-transparent via-slate-950/20 to-slate-950/80 shadow-inner' : 'from-transparent via-white/10 to-white/70 shadow-inner'}`} />
           </div>
 
           {/* Pulsing Neon Border */}

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Sparkles, ShieldCheck, Globe, Zap } from 'lucide-react';
+import { Sparkles, ShieldCheck, Globe, Zap, X } from 'lucide-react';
 import { MODULE_PACKAGES } from '../constants/packages';
 
 interface PackageSelectorDrawerProps {
@@ -45,27 +45,20 @@ export const PackageSelectorDrawer = ({
             }}
           >
             {/* Header */}
-            <div className="p-8 flex items-center justify-between">
+            <div className="p-6 sm:p-8 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-extrabold text-white tracking-tight leading-none">
+                <h2 className="text-[clamp(1.25rem,6vw,1.75rem)] font-extrabold text-white tracking-tight leading-none">
                   Package Library
                 </h2>
-                <p className="text-white/50 text-[0.7rem] font-bold uppercase tracking-widest mt-1.5">
+                <p className="text-white/50 text-[clamp(0.6rem,2vw,0.7rem)] font-bold uppercase tracking-widest mt-1.5 line-clamp-1">
                   Select Data Source
                 </p>
               </div>
-              <button 
-                onClick={onClose}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white/50 hover:text-white transition-colors"
-                aria-label="Close drawer"
-              >
-                <X size={20} />
-              </button>
             </div>
 
             {/* List */}
-            <div className="flex-1 overflow-y-auto px-6 pb-8 space-y-3 custom-scrollbar">
-              <div className="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest pl-1 mb-2">
+            <div className="flex-1 overflow-y-auto px-3 sm:px-3 pb-8 space-y-3 custom-scrollbar">
+              <div className="text-[clamp(0.55rem,2vw,0.65rem)] font-bold text-white/40 uppercase tracking-widest pl-1 mb-2">
                 Available Packages
               </div>
               
@@ -80,7 +73,7 @@ export const PackageSelectorDrawer = ({
                     // Close happens after small delay for animation if needed
                     onClose();
                   }}
-                  className={`group relative w-full p-4 rounded-2xl flex items-center gap-4 transition-all active:scale-[0.98] ${
+                  className={`group relative w-full p-3 sm:p-4 rounded-2xl flex items-center gap-3 sm:gap-4 transition-all active:scale-[0.98] ${
                     selectedPackageId === pkg.id 
                       ? 'bg-white/10 border-white/30' 
                       : 'bg-white/5 border-white/10 hover:bg-white/10'
@@ -91,17 +84,17 @@ export const PackageSelectorDrawer = ({
                       : 'none'
                   }}
                 >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  <div className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center ${
                     selectedPackageId === pkg.id ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-white/20 group-hover:text-white/40'
                   }`}>
                     {idx % 2 === 0 ? <ShieldCheck size={20} /> : <Globe size={20} />}
                   </div>
                   
-                  <div className="text-left">
-                    <div className="text-base font-extrabold text-white tracking-tight leading-tight">
+                  <div className="text-left min-w-0 flex-1">
+                    <div className="text-[clamp(0.9rem,4vw,1.1rem)] font-extrabold text-white tracking-tight leading-tight line-clamp-1">
                       {pkg.name}
                     </div>
-                    <div className="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest mt-0.5">
+                    <div className="text-[clamp(0.55rem,2vw,0.65rem)] font-bold text-white/40 uppercase tracking-widest mt-0.5 line-clamp-1">
                       {idx % 2 === 0 ? 'Official Collection' : 'Community Add-on'}
                     </div>
                   </div>
@@ -119,22 +112,22 @@ export const PackageSelectorDrawer = ({
               ))}
 
               {/* Mock Community Packages */}
-              <div className="pt-4 text-[0.65rem] font-bold text-white/40 uppercase tracking-widest pl-1 mb-2">
+              <div className="pt-4 text-[clamp(0.55rem,2vw,0.65rem)] font-bold text-white/40 uppercase tracking-widest pl-1 mb-2">
                 Discover More
               </div>
               {[1, 2].map((i) => (
                 <div 
                   key={i}
-                  className="w-full p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center gap-4 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer"
+                  className="w-full p-3 sm:p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center gap-3 sm:gap-4 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/20">
+                  <div className="w-10 h-10 shrink-0 rounded-xl bg-white/5 flex items-center justify-center text-white/20">
                     {i === 1 ? <Sparkles size={20} /> : <Zap size={20} />}
                   </div>
-                  <div className="text-left">
-                    <div className="text-base font-extrabold text-white tracking-tight leading-tight">
+                  <div className="text-left min-w-0 flex-1">
+                    <div className="text-[clamp(0.9rem,4vw,1.1rem)] font-extrabold text-white tracking-tight leading-tight line-clamp-1">
                       {i === 1 ? 'Street Slang Pro' : 'Napoli Dialect Pack'}
                     </div>
-                    <div className="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest mt-0.5">
+                    <div className="text-[clamp(0.55rem,2vw,0.65rem)] font-bold text-white/40 uppercase tracking-widest mt-0.5 line-clamp-1">
                       External Package
                     </div>
                   </div>

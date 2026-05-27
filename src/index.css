@@ -173,4 +173,147 @@ html {
   animation-delay: -5s;
 }
 
+@keyframes rotate360 { to { rotate: 360deg;} }
+@keyframes wobble {
+    0% { transform: translateX(10px) translateY(20px) rotate(-3deg) scale(1); }
+    20% { transform: translateX(-44px) translateY(-8px) rotate(6deg) scale(1.02); }
+    60% { transform: translateX(32px) translateY(18px) rotate(-8deg) scale(1); }
+    80% { transform: translateX(-42px) translateY(-22px) rotate(12deg) scale(0.94); }
+    100% { transform: translateX(10px) translateY(20px) rotate(-3deg) scale(1); }
+}
+
+.discovery-pack-card {
+    position: relative;
+    width: 240px; height: 130px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #292929aa 0%, #191919cc 50%);
+    backdrop-filter: blur(4px);
+    box-shadow: inset 0 2px 2px 0 #e7c4a088, inset 0 -2px 2px 0 #0003;
+    color: #ccc;
+    text-shadow: 1px 1px 3px #333a;
+    padding: 16px 20px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+}
+.discovery-pack-card h2, .discovery-pack-card p {
+    margin: 6px 0;
+}
+.discovery-pack-card h2 {
+    font-size: 1rem;
+}
+.discovery-pack-card p {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #aaa;
+}
+
+.discovery-pack-accents {
+    user-select: none;
+    pointer-events: none;
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex; justify-content: center; align-items: center;
+}
+.discovery-pack-accents .acc-card {
+    width: 250px; height: 130px;
+    background: #eee1;
+    opacity: 0.8;
+    z-index: -1;
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0; margin: auto;
+    border-radius: 12px;
+    box-shadow: inset 0 2px 2px 0 #e0c9b266, inset 0 -2px 2px 0 #0004;
+    backdrop-filter: blur(4px);
+    transition: all 0.1s linear;
+    transform-origin: 50% 80%;
+}
+.discovery-pack-accents .acc-card:nth-child(1) { animation: wobble 18s ease-in-out infinite; }
+.discovery-pack-accents .acc-card:nth-child(2) { animation: wobble 22s ease-in-out -6s infinite reverse; }
+.discovery-pack-accents .acc-card:nth-child(3) { animation: wobble 26s ease-in-out -18s infinite; }
+
+.top-light-neon {
+    position: absolute;
+    top: -85px;
+    left: 0; right: 0;
+    margin: auto;
+    width: 160px;
+    height: 4px;
+    border-radius: 10px;
+    background: #fffef9;
+    box-shadow: 0 0px 1px 1px #ffc78e, 0 1px 2px 1px #ff942977, 0 2px 6px 1px #e98b2d77, 0 4px 12px 0px #ff9e3d99, 0 12px 20px 12px #ff800044;
+}
+
+.discovery-pack-accents .light {
+    --bgref: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg id='Layer_1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 487 487'%3E%3Ccircle cx='243' cy='243.5' r='233' style='fill:none; opacity:.1; stroke:%23aaa; stroke-linecap:round; stroke-miterlimit:10; stroke-width:18px;'/%3E%3Ccircle cx='243.5' cy='243.5' r='243' style='fill:none; stroke:%23111; stroke-linecap:round; stroke-miterlimit:10;'/%3E%3Ccircle cx='243' cy='243.5' r='222' style='fill:none; stroke:%23111; stroke-linecap:round; stroke-miterlimit:10;'/%3E%3Cpath d='m10,243.5C10,114.82,114.32,10.5,243,10.5' style='fill:none; stroke:%23ddd; stroke-linecap:round; stroke-miterlimit:10; stroke-width:18px;'/%3E%3C/svg%3E");
+    position: absolute;
+    left: -100px; right: 0; 
+    top: 0; bottom: 0;
+    margin: auto;
+    width: 100px; height: 100px;
+    z-index: -2;
+    background-image: var(--bgref);
+    background-size: cover;
+    animation: rotate360 22s linear infinite;
+}
+
+.discovery-pack-accents .light::before, .discovery-pack-accents .light::after {
+    content: ''; display: block;
+    width: 100%; height: 100%;
+    position: absolute;
+    left: 0; right: 0;
+    top: 0; bottom: 0;
+    margin: auto;
+    background-image: var(--bgref);
+    background-size: cover;
+    filter: blur(3px);
+    scale: 1.01;
+}
+
+.discovery-pack-accents .light::after {
+    filter: blur(8px);
+}
+
+.discovery-pack-accents .light.sm {
+    width: 100px; height: 100px;
+    left: 100px; right: 0;
+    top: 0; bottom: 0;
+    animation: rotate360 22s linear -11s infinite reverse;
+}
+
+/* ====== 3D Carousel CSS ====== */
+.scene, .a3d { display: grid }
+
+.scene {
+	overflow: hidden;
+	perspective: 35em;
+	mask: linear-gradient(90deg, #0000, red 20% 80%, #0000);
+    -webkit-mask: linear-gradient(90deg, #0000, red 20% 80%, #0000);
+}
+
+.a3d {
+	place-self: center;
+	transform-style: preserve-3d;
+	animation: ry 32s linear infinite
+}
+
+@keyframes ry { to { rotate: y 1turn } }
+
+.scene-card {
+	--w: 12.5em; /* slightly adjusted for mobile screens */
+	--ba: calc(1turn/var(--n));
+	grid-area: 1/ 1;
+	width: var(--w);
+	aspect-ratio: 7/ 10;
+	object-fit: cover;
+	border-radius: 1.5em;
+	backface-visibility: hidden;
+	transform: 
+		rotatey(calc(var(--i)*var(--ba)))
+		translatez(calc(-1*(.5*var(--w) + .5em)/tan(.5*var(--ba))));
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.a3d { animation-duration: 128s }
+}
 

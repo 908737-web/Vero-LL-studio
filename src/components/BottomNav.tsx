@@ -86,49 +86,47 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   };
 
   return (
-    <div className="fixed bottom-[1.5rem] left-1/2 -translate-x-1/2 z-[60]">
-      <nav 
-        className="relative flex items-center justify-between p-[0.35rem] h-[48px] w-[320px] rounded-full border transition-all"
-        style={{ 
-          background: isDarkMode 
-            ? 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)'
-            : 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 100%)',
-          boxShadow: isDarkMode 
-            ? (discoveryThemeColor 
-              ? `0 20px 40px ${discoveryThemeColor}20, inset 0 1px 1px rgba(255,255,255,0.15)` 
-              : '0 20px 40px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.15)')
-            : '0 10px 30px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.6)',
-          backdropFilter: 'blur(50px)',
-          WebkitBackdropFilter: 'blur(50px)',
-          borderColor: isDarkMode 
-            ? (discoveryThemeColor ? `${discoveryThemeColor}40` : 'rgba(255,255,255,0.1)')
-            : 'rgba(255,255,255,0.8)'
+    <nav 
+      className="relative flex items-center justify-between p-[0.35rem] h-[48px] w-[260px] rounded-full border transition-all mx-auto pointer-events-auto"
+      style={{ 
+        background: isDarkMode 
+          ? 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)'
+          : 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 100%)',
+        boxShadow: isDarkMode 
+          ? (discoveryThemeColor 
+            ? `0 20px 40px ${discoveryThemeColor}20, inset 0 1px 1px rgba(255,255,255,0.15)` 
+            : '0 20px 40px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.15)')
+          : '0 10px 30px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.6)',
+        backdropFilter: 'blur(50px)',
+        WebkitBackdropFilter: 'blur(50px)',
+        borderColor: isDarkMode 
+          ? (discoveryThemeColor ? `${discoveryThemeColor}40` : 'rgba(255,255,255,0.1)')
+          : 'rgba(255,255,255,0.8)'
+      }}
+    >
+      <div className="flex-1 flex justify-around h-full">
+        {leftTabs.map(renderTab)}
+      </div>
+
+      {/* Central Genesis Button */}
+      <button
+        onClick={onOpenLab}
+        className="relative flex flex-shrink-0 items-center justify-center w-10 h-10 rounded-full z-10 mx-1 active:scale-95 transition-transform"
+        style={{
+          background: isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0,0,0,0.05)',
+          border: `1px solid ${discoveryThemeColor ? `${discoveryThemeColor}60` : (isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.1)')}`,
+          boxShadow: discoveryThemeColor 
+            ? `0 0 15px ${discoveryThemeColor}40` 
+            : (isDarkMode ? '0 0 15px rgba(255,255,255,0.2)' : '0 0 10px rgba(0,0,0,0.1)'),
+          backdropFilter: 'blur(10px)'
         }}
       >
-        <div className="flex-1 flex justify-around h-full">
-          {leftTabs.map(renderTab)}
-        </div>
+        <Plus className={`w-5 h-5 ${isDarkMode ? 'text-white' : 'text-slate-900'}`} style={{ color: discoveryThemeColor }} />
+      </button>
 
-        {/* Central Genesis Button */}
-        <button
-          onClick={onOpenLab}
-          className="relative flex flex-shrink-0 items-center justify-center w-10 h-10 rounded-full z-10 mx-1 active:scale-95 transition-transform"
-          style={{
-            background: isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0,0,0,0.05)',
-            border: `1px solid ${discoveryThemeColor ? `${discoveryThemeColor}60` : (isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.1)')}`,
-            boxShadow: discoveryThemeColor 
-              ? `0 0 15px ${discoveryThemeColor}40` 
-              : (isDarkMode ? '0 0 15px rgba(255,255,255,0.2)' : '0 0 10px rgba(0,0,0,0.1)'),
-            backdropFilter: 'blur(10px)'
-          }}
-        >
-          <Plus className={`w-5 h-5 ${isDarkMode ? 'text-white' : 'text-slate-900'}`} style={{ color: discoveryThemeColor }} />
-        </button>
-
-        <div className="flex-1 flex justify-around h-full">
-          {rightTabs.map(renderTab)}
-        </div>
-      </nav>
-    </div>
+      <div className="flex-1 flex justify-around h-full">
+        {rightTabs.map(renderTab)}
+      </div>
+    </nav>
   );
 };

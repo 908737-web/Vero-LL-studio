@@ -1,10 +1,9 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Flame, 
   Brain, 
   BookOpen, 
-  Settings as SettingsIcon, 
   Award,
   Users,
   Download,
@@ -16,7 +15,6 @@ import {
 } from 'lucide-react';
 import { GlassCard } from '../components/GlassCard';
 import { useUserProfile } from '../hooks/useUserProfile';
-import { SettingsScreen } from '../components/SettingsScreen';
 import { DailyGoal } from '../types';
 
 interface UserProfileScreenProps {
@@ -27,6 +25,7 @@ interface UserProfileScreenProps {
   setThemeMode: (mode: 'light' | 'dark') => void;
   dailyGoal: DailyGoal;
   setDailyGoal: (goal: DailyGoal) => void;
+  onClose?: () => void;
 }
 
 export function UserProfileScreen({ 
@@ -36,9 +35,9 @@ export function UserProfileScreen({
   themeMode,
   setThemeMode,
   dailyGoal,
-  setDailyGoal
+  setDailyGoal,
+  onClose
 }: UserProfileScreenProps) {
-  const [showSettings, setShowSettings] = React.useState(false);
   
   const {
     favorites,
@@ -52,46 +51,17 @@ export function UserProfileScreen({
   const mutedTextColor = isDarkMode ? 'text-white/60' : 'text-slate-500';
   const bgGlass = isDarkMode ? 'bg-white/5 border-white/10' : 'bg-slate-900/5 border-slate-900/10';
 
-  if (showSettings) {
-    return (
-      <div className="flex flex-col h-full w-full relative z-20">
-        <div className="flex items-center mb-6 pt-2 shrink-0">
-          <button 
-            onClick={() => setShowSettings(false)}
-            className={`p-2 rounded-full ${bgGlass} backdrop-blur-md active:scale-95 transition-transform mr-4`}
-          >
-            <ChevronRight className={`w-5 h-5 ${textColor} rotate-180`} />
-          </button>
-          <h2 className={`text-2xl font-bold ${textColor}`}>Settings & Preferences</h2>
-        </div>
-        <div className="flex-1 overflow-y-auto scrollbar-hide pb-32">
-          <SettingsScreen 
-            uiScale={uiScale} 
-            setUiScale={setUiScale} 
-            themeMode={themeMode}
-            setThemeMode={setThemeMode}
-            dailyGoal={dailyGoal}
-            setDailyGoal={setDailyGoal}
-          />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col h-full w-full relative z-20">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 pt-2 shrink-0">
-        <div>
-          <h2 className={`text-2xl font-bold ${textColor}`}>Ca' Foscari</h2>
-          <p className={mutedTextColor}>Polyglot Scholar</p>
+      <div className="flex items-center gap-4 mb-6 pt-2 shrink-0">
+        <div className="w-16 h-16 rounded-3xl overflow-hidden border-2 border-white/10 shadow-lg shrink-0">
+          <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=256&auto=format&fit=crop" alt="Luca Romano" className="w-full h-full object-cover" />
         </div>
-        <button 
-          onClick={() => setShowSettings(true)}
-          className={`p-3 rounded-full ${bgGlass} backdrop-blur-md active:scale-95 transition-transform`}
-        >
-          <SettingsIcon className={`w-5 h-5 ${textColor}`} />
-        </button>
+        <div>
+          <h2 className={`text-2xl font-bold tracking-tight ${textColor}`}>Luca Romano</h2>
+          <p className={`${mutedTextColor} text-sm flex items-center gap-1.5 mt-0.5`}><Award className="w-3.5 h-3.5" /> Polyglot Scholar</p>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto scrollbar-hide pb-32 space-y-6">
@@ -189,7 +159,7 @@ export function UserProfileScreen({
                <Plus className={`w-3 h-3 ${textColor}`} />
             </button>
           </div>
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-6 px-6">
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-6 px-3">
             {realms.map((realm) => (
               <GlassCard key={realm.id} className="p-4 w-[160px] shrink-0 flex flex-col justify-between min-h-[140px]">
                 <div className="flex flex-col gap-1">
