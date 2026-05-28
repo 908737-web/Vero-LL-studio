@@ -313,7 +313,170 @@ html {
 		translatez(calc(-1*(.5*var(--w) + .5em)/tan(.5*var(--ba))));
 }
 
+@keyframes blob-move {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(15px, -10px) scale(1.2); }
+  66% { transform: translate(-10px, 15px) scale(0.9); }
+}
+
+@keyframes blob-move-alt {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-15px, 12px) scale(0.9); }
+  66% { transform: translate(10px, -10px) scale(1.1); }
+}
+
+@keyframes sweep-move {
+  0% { transform: translate(-50%, -50%); }
+  100% { transform: translate(100%, 100%); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(1.2); }
+}
+
+.animate-blob-1 { animation: blob-move 8s ease-in-out infinite; }
+.animate-blob-2 { animation: blob-move-alt 9s ease-in-out infinite; }
+.animate-sweep { animation: sweep-move 2.5s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulse-glow 8s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
-	.a3d { animation-duration: 128s }
+  .animate-blob-1, .animate-blob-2, .animate-sweep, .animate-pulse-glow {
+    animation: none !important;
+  }
+}
+
+/* MacOS Liquid Glass Effect requested by user */
+.macos-glass-card {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.macos-glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 2px 2px 0px -2px rgba(255, 255, 255, 0.7), inset 0 0 3px 1px rgba(255, 255, 255, 0.7);
+}
+
+.macos-glass-card::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background-color: rgba(255, 255, 255, 0.05); /* Just a bit of tint to make it visible */
+}
+
+/* MacOS Liquid Glass standard icon container */
+.macos-glass-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+  border-radius: 12px;
+  isolation: isolate;
+}
+
+.macos-glass-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 2px 2px 0px -2px rgba(255, 255, 255, 0.7), inset 0 0 3px 1px rgba(255, 255, 255, 0.7);
+}
+
+.glassContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+}
+
+.glassContainer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  box-shadow: inset 2px 2px 0px -2px rgba(255, 255, 255, 0.7), inset 0 0 3px 1px rgba(255, 255, 255, 0.7);
+}
+
+.glassContainer::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background-color: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.glassContainer.glass-refraction::after {
+  backdrop-filter: blur(0px) !important;
+  -webkit-backdrop-filter: blur(0px) !important;
+  background-color: transparent !important;
+  filter: url(#container-glass);
+}
+
+.glassBtn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border-radius: 9999px;
+  outline: none;
+  border: none;
+  z-index: 0;
+}
+
+.glassBtn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 9999px;
+  box-shadow: inset 2px 2px 0px -2px rgba(255, 255, 255, 0.7), inset 0 0 3px 1px rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.glassBtn::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: 9999px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.glassBtn svg {
+  width: 100%;
+  height: 100%;
+  stroke: #fff;
+  position: relative;
+  z-index: 10;
 }
 

@@ -43,7 +43,7 @@ export const WordListDrawer = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/40 backdrop-blur-[80px]"
+            className="absolute inset-0 bg-black/90"
           />
 
           <motion.div
@@ -62,7 +62,7 @@ export const WordListDrawer = ({
                    <h2 className={`text-2xl font-bold ${textColor}`}>Vocabulary List</h2>
                  </div>
                  
-                 <div className={`relative flex items-center w-full h-12 rounded-2xl border ${bgGlass} backdrop-blur-md px-3 pointer-events-auto shadow-lg shrink-0 mb-4`}>
+                 <div className={`relative flex items-center w-full h-12 rounded-2xl border ${bgGlass} px-3 pointer-events-auto shadow-lg shrink-0 mb-4`}>
                     <Search className={`w-5 h-5 ${mutedTextColor} mr-3`} />
                     <input
                         type="text"
@@ -94,7 +94,7 @@ export const WordListDrawer = ({
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ duration: 0.2 }}
-                            className={`flex items-center justify-between p-4 rounded-[20px] border ${bgGlass} backdrop-blur-md`}
+                            className={`flex items-center justify-between p-4 rounded-[20px] border ${bgGlass}`}
                         >
                             <div className="flex items-center gap-4">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0 ${isDarkMode ? 'bg-white/10 text-white/50' : 'bg-slate-900/10 text-slate-500'}`}>

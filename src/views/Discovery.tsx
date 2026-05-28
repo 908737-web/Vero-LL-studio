@@ -1,8 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
 import { BookOpen, Map, Headphones, Sparkles, Plus, Check, ChevronUp, Filter, Search, ArrowLeft, Film, Compass, Tv, Youtube, Play } from 'lucide-react';
 import { DiscoveryTile } from '../components/DiscoveryTile';
-import { CinematicBackground } from '../components/CinematicBackground';
 
 interface Package {
   id: string;
@@ -19,7 +18,6 @@ interface Category {
   subtitle: string;
   icon: any;
   image: string;
-  video: string;
   color: string;
   size: 'large' | 'medium' | 'vertical' | 'small';
   packages: Package[];
@@ -32,7 +30,6 @@ const CATEGORIES: Category[] = [
     subtitle: 'PALAZZO DUCALE',
     icon: BookOpen,
     image: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&q=80&w=1000',
-    video: 'https://cdn.pixabay.com/video/2016/09/21/5412-183786499_tiny.mp4', 
     color: '#3b82f6',
     size: 'large',
     packages: [
@@ -47,7 +44,6 @@ const CATEGORIES: Category[] = [
     subtitle: 'PONTE DI RIALTO',
     icon: Map,
     image: 'https://images.unsplash.com/photo-1534113414509-0eec2bfb493f?auto=format&fit=crop&q=80&w=1000',
-    video: 'https://cdn.pixabay.com/video/2021/08/11/84683-587212450_large.mp4', 
     color: '#10b981',
     size: 'medium',
     packages: [
@@ -62,7 +58,6 @@ const CATEGORIES: Category[] = [
     subtitle: 'PIAZZA SAN MARCO',
     icon: Headphones,
     image: 'https://images.unsplash.com/photo-1512100356136-7729860ef796?auto=format&fit=crop&q=80&w=1000',
-    video: 'https://assets.mixkit.co/videos/preview/mixkit-venice-canal-with-gondolas-and-historic-buildings-42643-large.mp4',
     color: '#8b5cf6',
     size: 'vertical',
     packages: [
@@ -79,7 +74,6 @@ const CATEGORIES: Category[] = [
     subtitle: 'PONTE DEI SOSPIRI',
     icon: Sparkles,
     image: 'https://images.unsplash.com/photo-1517941823-815bea90d291?auto=format&fit=crop&q=80&w=1000',
-    video: 'https://cdn.pixabay.com/video/2019/04/17/22880-331580175_large.mp4',
     color: '#f59e0b',
     size: 'small',
     packages: [
@@ -96,6 +90,7 @@ interface DiscoveryProps {
   setThemeColor: (color: string) => void;
   isDarkMode?: boolean;
   onDeepViewChange?: (isDeep: boolean) => void;
+  isDeepView?: boolean;
 }
 
 const PackageCardButton: React.FC<{ isActive: boolean, onAddPackage: (pkg: Package, coords?: { x: number, y: number }) => void, pkg: Package, isDarkMode: boolean }> = ({ isActive, onAddPackage, pkg, isDarkMode }) => {
@@ -326,8 +321,15 @@ const CategoryDetailView: React.FC<{ category: Category, onBack: () => void, onA
   );
 };
 
-export const Discovery: React.FC<DiscoveryProps> = ({ onAddPackage, activePackageIds, themeColor, setThemeColor, isDarkMode = true, onDeepViewChange }) => {
+export const Discovery: React.FC<DiscoveryProps> = ({ onAddPackage, activePackageIds, themeColor, setThemeColor, isDarkMode = true, onDeepViewChange, isDeepView }) => {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+
+  useEffect(() => {
+    if (isDeepView === false && selectedCategory !== null) {
+      setSelectedCategory(null);
+      setThemeColor('');
+    }
+  }, [isDeepView]);
 
   const handleCategorySelect = (cat: Category) => {
     setSelectedCategory(cat);
@@ -343,11 +345,13 @@ export const Discovery: React.FC<DiscoveryProps> = ({ onAddPackage, activePackag
 
   return (
     <div className="relative w-full h-full overflow-hidden">
-      <CinematicBackground 
-        videoUrl={selectedCategory?.video || "https://assets.mixkit.co/videos/preview/mixkit-venice-canal-with-gondolas-and-historic-buildings-42643-large.mp4"} 
-        isActive={true} 
-        themeColor={themeColor || '#8b5cf6'} 
-        isDarkMode={isDarkMode}
+      <div 
+        className="absolute inset-0 z-0 transition-colors duration-1000"
+        style={{
+          background: themeColor 
+            ? `radial-gradient(circle at 50% 50%, ${themeColor}${isDarkMode ? '20' : '30'} 0%, transparent 100%)`
+            : 'transparent'
+        }}
       />
 
       <AnimatePresence mode="wait">

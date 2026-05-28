@@ -25,6 +25,15 @@ export interface EssentialWord {
   persian: string;
 }
 
+export interface DictionaryItem {
+  id: string;
+  italian: string;
+  english: string;
+  altMeanings: string[];
+  synonyms: string[];
+  antonyms: string[];
+}
+
 export interface WordEntry {
   id: string;
   word: string;

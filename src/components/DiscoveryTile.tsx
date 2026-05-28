@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { LucideIcon } from 'lucide-react';
 
 interface DiscoveryTileProps {
@@ -22,6 +22,7 @@ export const DiscoveryTile = memo<DiscoveryTileProps>(({
   color
 }) => {
   const [isCleared, setIsCleared] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const sizeClasses = {
     large: 'col-span-2 row-span-2',
@@ -40,12 +41,12 @@ export const DiscoveryTile = memo<DiscoveryTileProps>(({
 
   return (
     <motion.div
-      whileHover={isCleared ? {} : { 
+      whileHover={shouldReduceMotion || isCleared ? {} : { 
         scale: 1.04, 
         rotate: 0.5,
         boxShadow: `0 20px 40px rgba(0,0,0,0.4), 0 0 15px ${color}40`,
       }}
-      whileTap={isCleared ? {} : { scale: 0.98 }}
+      whileTap={shouldReduceMotion || isCleared ? {} : { scale: 0.98 }}
       onClick={handleTileClick}
       className={`${sizeClasses[size]} relative rounded-[32px] overflow-hidden cursor-pointer group border border-white/10 transition-all duration-500 ${
         isCleared ? 'scale-105 shadow-[0_25px_50px_rgba(0,0,0,0.6)] border-white/30' : ''
@@ -68,19 +69,9 @@ export const DiscoveryTile = memo<DiscoveryTileProps>(({
           isCleared ? 'backdrop-blur-none bg-transparent opacity-0' : 'backdrop-blur-[4px] group-hover:backdrop-blur-[1px] group-hover:bg-slate-950/10'
         }`} />
         
-        {/* Dynamic Inner Fluid Color Blobs (Visual background animation requested) */}
-        <motion.div
-          animate={isCleared ? { opacity: 0 } : {
-            x: [0, 15, -10, 0],
-            y: [0, -10, 15, 0],
-            scale: [1, 1.2, 0.9, 1],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className={`absolute -top-12 -right-12 w-32 h-32 rounded-full mix-blend-screen filter blur-xl transition-opacity duration-500 ${
+        {/* Dynamic Inner Fluid Color Blobs (Visual background animation) */}
+        <div
+          className={`absolute -top-12 -right-12 w-32 h-32 rounded-full mix-blend-screen filter blur-xl transition-opacity duration-500 animate-blob-1 ${
             isCleared ? 'opacity-0' : 'opacity-40 group-hover:opacity-75'
           }`}
           style={{
@@ -88,19 +79,8 @@ export const DiscoveryTile = memo<DiscoveryTileProps>(({
           }}
         />
 
-        <motion.div
-          animate={isCleared ? { opacity: 0 } : {
-            x: [0, -15, 10, 0],
-            y: [0, 12, -10, 0],
-            scale: [1, 0.9, 1.1, 1],
-          }}
-          transition={{
-            duration: 9,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1.5
-          }}
-          className={`absolute -bottom-12 -left-12 w-36 h-36 rounded-full mix-blend-screen filter blur-xl transition-opacity duration-500 ${
+        <div
+          className={`absolute -bottom-12 -left-12 w-36 h-36 rounded-full mix-blend-screen filter blur-xl transition-opacity duration-500 animate-blob-2 ${
             isCleared ? 'opacity-0' : 'opacity-30 group-hover:opacity-60'
           }`}
           style={{
@@ -118,39 +98,20 @@ export const DiscoveryTile = memo<DiscoveryTileProps>(({
       <div className={`absolute inset-0 z-10 opacity-0 transition-opacity duration-700 pointer-events-none overflow-hidden ${
         isCleared ? 'hidden' : 'group-hover:opacity-100'
       }`}>
-        <motion.div 
-          className="w-[150%] h-[150%] absolute"
+        <div 
+          className="w-[150%] h-[150%] absolute animate-sweep"
           style={{
             background: 'linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.1) 45%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 55%, transparent 60%)',
             top: '-50%',
             left: '-50%'
-          }}
-          animate={{
-            x: ['-50%', '100%'],
-            y: ['-50%', '100%']
-          }}
-          transition={{
-            duration: 2.5,
-            repeat: Infinity,
-            repeatDelay: 2,
-            ease: "easeInOut"
           }}
         />
       </div>
 
       {/* Pulsing Crystalline Atmosphere Glow */}
       {!isCleared && (
-        <motion.div
-          animate={{
-            opacity: [0.15, 0.35, 0.15],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute -inset-20 z-0 bg-radial from-white/20 to-transparent blur-3xl pointer-events-none"
+        <div
+          className="absolute -inset-20 z-0 bg-radial from-white/20 to-transparent blur-3xl pointer-events-none animate-pulse-glow"
           style={{ color }}
         />
       )}
@@ -159,13 +120,13 @@ export const DiscoveryTile = memo<DiscoveryTileProps>(({
       <div className={`relative z-10 w-full h-full p-4 flex flex-col justify-between transition-all duration-500 ${
         isCleared ? 'opacity-0 scale-90 blur-[4px]' : 'opacity-100 scale-100'
       }`}>
-        <div className={`p-2.5 rounded-2xl w-fit backdrop-blur-xl border border-white/10`} style={{ backgroundColor: `${color}20` }}>
+        <div className={`p-2.5 rounded-2xl w-fit bg-slate-900/50 border border-white/10`} style={{ backgroundColor: `${color}20` }}>
           <Icon className="w-5 h-5" style={{ color }} />
         </div>
 
         <div>
           <h3 className="text-lg font-black text-white tracking-tight leading-none mb-1.5 drop-shadow-md">{title}</h3>
-          <div className="inline-block px-1.5 py-0.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/20">
+          <div className="inline-block px-1.5 py-0.5 rounded-lg bg-white/20 border border-white/20">
             <p className="text-[8px] font-black text-white tracking-[0.2em] uppercase">{subtitle}</p>
           </div>
         </div>

@@ -1,97 +1,146 @@
-import React, { useState, useMemo } from 'react';
-import { essentialWords, mockEsameData } from '../data/dictionaryData';
-import { Search } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { DictionaryEntry } from '../components/DictionaryEntry';
+import React, { useState, useMemo, useEffect } from "react";
+import { dictionaryData } from "../data/dictionaryData";
+import { DictionaryItem } from "../types/dictionary";
+import { Search, Heart, FolderPlus } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 interface DictionaryProps {
   isDarkMode: boolean;
 }
 
 export function Dictionary({ isDarkMode }: DictionaryProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedWord, setSelectedWord] = useState<any | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredWords = useMemo(() => {
     if (!searchTerm.trim()) {
-      return essentialWords;
+      return dictionaryData;
     }
     const lowerSearch = searchTerm.toLowerCase();
-    return essentialWords.filter(word => 
-      word.italian.toLowerCase().includes(lowerSearch) || 
-      word.persian.toLowerCase().includes(lowerSearch)
+    return dictionaryData.filter(
+      (item) =>
+        item.italian.toLowerCase().includes(lowerSearch) ||
+        item.english.toLowerCase().includes(lowerSearch) ||
+        item.altMeanings.some((m) => m.toLowerCase().includes(lowerSearch)),
     );
   }, [searchTerm]);
 
-  const textColor = isDarkMode ? 'text-white' : 'text-slate-900';
-  const mutedTextColor = isDarkMode ? 'text-white/60' : 'text-slate-500';
-  const bgGlass = isDarkMode ? 'bg-white/5 border-white/10' : 'bg-slate-900/5 border-slate-900/10';
+  const textColor = isDarkMode ? "text-white" : "text-slate-900";
+  const mutedTextColor = isDarkMode ? "text-white/60" : "text-slate-500";
+  const bgGlass = isDarkMode
+    ? "bg-white/5 border-white/10"
+    : "bg-white border-slate-200 shadow-sm";
 
   return (
     <div className="w-full h-full flex flex-col relative z-20">
-      <AnimatePresence mode="wait">
-        {selectedWord ? (
-          <motion.div
-            key="details"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 50 }}
-            className="flex-1 overflow-hidden"
-          >
-            <button onClick={() => setSelectedWord(null)} className="absolute top-8 left-4 z-50 text-indigo-400">Back</button>
-            <DictionaryEntry data={selectedWord === 'esame' ? mockEsameData : {
-                id: selectedWord.italian.toLowerCase(),
-                word: selectedWord.italian,
-                ipa: '...',
-                parts: [{ type: 'Word', definitions: [{ text: selectedWord.persian, synonyms: [], antonyms: [], examples: [] }] }],
-                phrases: [],
-                nearbyWords: []
-            }} />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="list"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="w-full h-full flex flex-col relative"
-          >
-            <div className="pt-8 px-3 mb-4">
-              <h2 className={`text-2xl font-bold mb-4 ${textColor}`}>Dictionary</h2>
-              <div className={`relative flex items-center w-full h-12 rounded-2xl border ${bgGlass} backdrop-blur-md px-3 shadow-lg`}>
-                <Search className={`w-5 h-5 ${mutedTextColor} mr-3`} />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search 100 essential words..."
-                  className={`w-full h-full bg-transparent outline-none ${textColor} placeholder:text-opacity-50 text-base`}
-                />
-              </div>
-            </div>
+      <div className="pt-0 px-4 mb-2">
+        <h2 className={`text-3xl font-black mb-3 ${textColor} tracking-tight`}>
+          Dictionary
+        </h2>
+        <div
+          className={`relative flex items-center w-full h-[52px] rounded-2xl border ${isDarkMode ? "bg-white/10 border-white/20" : "bg-white border-slate-200"} px-4 shadow-lg`}
+        >
+          <Search className={`w-5 h-5 ${mutedTextColor} mr-3`} />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search words..."
+            className={`w-full h-full bg-transparent outline-none ${textColor} placeholder:text-opacity-50 text-[17px] font-medium`}
+          />
+        </div>
+      </div>
 
-            <div className="flex-1 overflow-y-auto pb-32 scrollbar-hide space-y-3 px-3">
-              {filteredWords.map((word, index) => (
-                <motion.div
-                  key={word.italian + index}
-                  onClick={() => setSelectedWord(word.italian.toLowerCase() === 'esame' ? 'esame' : word)}
-                  className={`flex items-center justify-between p-4 rounded-[20px] border ${bgGlass} backdrop-blur-md cursor-pointer hover:bg-white/10`}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0 ${isDarkMode ? 'bg-white/10 text-white/50' : 'bg-slate-900/10 text-slate-500'}`}>
-                      {index + 1}
-                    </div>
-                    <div className="flex flex-col text-left">
-                      <span className={`text-lg font-bold ${textColor}`}>{word.italian}</span>
-                      <span className={`text-sm ${mutedTextColor} font-medium`}>{word.persian}</span>
-                    </div>
+      <div className="flex-1 overflow-y-auto pb-4 scrollbar-hide space-y-4 px-4">
+        <AnimatePresence>
+          {filteredWords.map((item, index) => (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: Math.min(index * 0.05, 0.5) }}
+              key={item.id}
+              className={`flex flex-col p-5 rounded-[28px] border ${bgGlass} shadow-lg backdrop-blur-xl relative overflow-hidden`}
+            >
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex flex-col">
+                  <span
+                    className={`text-[28px] leading-none font-black tracking-tight ${textColor} mb-1.5`}
+                  >
+                    {item.italian}
+                  </span>
+                  <span className="text-lg font-bold text-indigo-400">
+                    {item.english}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isDarkMode ? "bg-white/10 hover:bg-white/20 text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-700"}`}
+                  >
+                    <Heart className="w-5 h-5" />
+                  </button>
+                  <button
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isDarkMode ? "bg-white/10 hover:bg-white/20 text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-700"}`}
+                  >
+                    <FolderPlus className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {item.altMeanings.length > 0 && (
+                <div className="mt-3">
+                  <div className="flex flex-wrap gap-1.5">
+                    {item.altMeanings.map((m, i) => (
+                      <span
+                        key={i}
+                        className={`text-xs px-2.5 py-1 rounded-lg font-semibold tracking-wide ${isDarkMode ? "bg-white/10 text-white/80" : "bg-slate-100 text-slate-600"}`}
+                      >
+                        {m}
+                      </span>
+                    ))}
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                </div>
+              )}
+
+              {(item.synonyms.length > 0 || item.antonyms.length > 0) && (
+                <div
+                  className="mt-4 pt-4 border-t border-current"
+                  style={{
+                    borderColor: isDarkMode
+                      ? "rgba(255,255,255,0.1)"
+                      : "rgba(0,0,0,0.05)",
+                  }}
+                >
+                  <div className="flex flex-col gap-2.5">
+                    {item.synonyms.length > 0 && (
+                      <div className="flex flex-col gap-1">
+                        <span
+                          className={`text-[10px] uppercase font-black tracking-wider ${mutedTextColor}`}
+                        >
+                          Synonyms
+                        </span>
+                        <span className={`text-sm font-medium ${textColor}`}>
+                          {item.synonyms.join(", ")}
+                        </span>
+                      </div>
+                    )}
+                    {item.antonyms.length > 0 && (
+                      <div className="flex flex-col gap-1">
+                        <span
+                          className={`text-[10px] uppercase font-black tracking-wider ${mutedTextColor}`}
+                        >
+                          Antonyms
+                        </span>
+                        <span className={`text-sm font-medium ${textColor}`}>
+                          {item.antonyms.join(", ")}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
